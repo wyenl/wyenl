@@ -168,9 +168,6 @@
             pointer-events: none;
             transition: opacity 0.3s ease;
         }
-        .scary-sound {
-            display: none;
-        }
         .apology {
             background: linear-gradient(45deg, #ffe4e4, #fff0f0);
             padding: 20px;
@@ -183,6 +180,9 @@
             font-weight: bold;
             margin: 10px 0;
         }
+        .scary-sound {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -193,7 +193,7 @@
     </div>
 
     <div id="scary-face"></div>
-    <audio id="scream-sound" class="scary-sound">
+    <audio id="scream-sound" preload="auto">
         <source src="https://assets.mixkit.co/sfx/preview/mixkit-horror-scream-2836.mp3" type="audio/mpeg">
     </audio>
 
@@ -220,6 +220,11 @@
             setTimeout(function() {
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('mainInvitation').classList.add('show');
+                
+                // Предзагрузка звука
+                const audio = document.getElementById('scream-sound');
+                audio.volume = 0.8; // Устанавливаем громкость
+                audio.load(); // Принудительно загружаем
             }, 2500);
         });
 
@@ -256,7 +261,14 @@
             // Активируем скример
             document.body.classList.add('scary');
             document.getElementById('scary-face').style.opacity = '1';
-            document.getElementById('scream-sound').play();
+            
+            // Воспроизводим звук
+            const audio = document.getElementById('scream-sound');
+            audio.currentTime = 0; // Перематываем в начало
+            audio.play().catch(e => {
+                console.log('Ошибка воспроизведения звука:', e);
+                // Если звук не работает, просто продолжаем без него
+            });
             
             // Показываем извинение через 2 секунды
             setTimeout(function() {
@@ -299,7 +311,7 @@
                 confetti.className = 'confetti';
                 confetti.style.left = Math.random() * 100 + 'vw';
                 confetti.style.top = '-10px';
-                confetti.style.backgroundColor = ['#ff6b6b', '#fd7e14', '#f9c74f', '#90be6d', '#577590'][Math.floor(Math.random() * 5)];
+                confetti.style.backgroundColor = ['#ff6b6b', '#fd7e14', '#f9c74f', #90be6d', '#577590'][Math.floor(Math.random() * 5)];
                 confetti.style.width = (Math.random() * 10 + 5) + 'px';
                 confetti.style.height = (Math.random() * 10 + 5) + 'px';
                 confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
