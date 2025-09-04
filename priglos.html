@@ -18,6 +18,11 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
             overflow: hidden;
+            transition: all 0.5s ease;
+        }
+        body.scary {
+            background: #000 !important;
+            animation: none !important;
         }
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
@@ -34,6 +39,8 @@
             opacity: 0;
             transform: translateY(20px) scale(0.95);
             transition: all 1s ease;
+            position: relative;
+            z-index: 100;
         }
         .show {
             opacity: 1;
@@ -56,6 +63,11 @@
         .btn-primary:hover {
             transform: translateY(-3px);
             box-shadow: 0 7px 14px rgba(0,0,0,0.2);
+        }
+        .btn-warning {
+            background: linear-gradient(45deg, #ffc107, #fd7e14);
+            border: none;
+            margin-top: 10px;
         }
         .details {
             font-size: 1.1rem;
@@ -144,6 +156,33 @@
             margin: 15px 0;
             line-height: 1.6;
         }
+        #scary-face {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="black"/><circle cx="35" cy="40" r="5" fill="red"/><circle cx="65" cy="40" r="5" fill="red"/><path d="M 30 70 Q 50 85 70 70" stroke="red" stroke-width="2" fill="none"/></svg>') center/contain no-repeat;
+            opacity: 0;
+            z-index: 1000;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .scary-sound {
+            display: none;
+        }
+        .apology {
+            background: linear-gradient(45deg, #ffe4e4, #fff0f0);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 4px solid #ff6b6b;
+        }
+        .warning-text {
+            color: #ff6b6b;
+            font-weight: bold;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -153,6 +192,11 @@
         <p class="mt-3 text-white">Загружаем немного волшебства...</p>
     </div>
 
+    <div id="scary-face"></div>
+    <audio id="scream-sound" class="scary-sound">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-horror-scream-2836.mp3" type="audio/mpeg">
+    </audio>
+
     <div class="container invitation-card" id="mainInvitation">
         <h1>Привет, Ксюша! 💖</h1>
         <p class="lead">У меня есть одно особенное предложение для тебя...</p>
@@ -161,6 +205,11 @@
         
         <button class="btn btn-primary btn-lg" onclick="showInvitation()">
             <i class="bi bi-gift-fill"></i> Узнать что это
+        </button>
+
+        <br>
+        <button class="btn btn-warning btn-sm" onclick="showScaryWarning()">
+            <i class="bi bi-exclamation-triangle"></i> Не нажимай эту кнопку!
         </button>
     </div>
 
@@ -195,7 +244,53 @@
                         <i class="bi bi-x-circle"></i> Нет
                     </button>
                 </div>
+
+                <br>
+                <button class="btn btn-warning btn-sm mt-2" onclick="showScaryWarning()">
+                    <i class="bi bi-exclamation-triangle"></i> Серьёзно, не нажимай сюда!
+                </button>
             `;
+        }
+
+        function showScaryWarning() {
+            // Активируем скример
+            document.body.classList.add('scary');
+            document.getElementById('scary-face').style.opacity = '1';
+            document.getElementById('scream-sound').play();
+            
+            // Показываем извинение через 2 секунды
+            setTimeout(function() {
+                document.getElementById('scary-face').style.opacity = '0';
+                document.body.classList.remove('scary');
+                
+                document.getElementById('mainInvitation').innerHTML = `
+                    <h1>😱 Ой-ой-ой! Прости!!!</h1>
+                    <div class="apology">
+                        <p>Я знаю, что ты боишься ужастиков... Мне стало так стыдно! 😔</p>
+                        <p>Это была плохая идея, прости меня! Я хотел просто пошутить...</p>
+                        <p>Чтобы загладить вину, я promise:</p>
+                        <ul>
+                            <li>🛡️ Никаких ужастиков на свидании</li>
+                            <li>🌻 Только романтика и красивые виды</li>
+                            <li>🍫 Куплю тебе самую вкусную шоколадку</li>
+                            <li>🤗 Будет много обнимашек (если захочешь)</li>
+                        </ul>
+                        <p>Простишь меня? 🥺</p>
+                    </div>
+                    
+                    <div class="warning-text">
+                        <i class="bi bi-lightning-charge"></i> Кстати, это была проверка на смелость! Ты прошла! 💪
+                    </div>
+                    
+                    <button class="btn btn-primary btn-lg mt-3" onclick="showInvitation()">
+                        <i class="bi bi-arrow-return-left"></i> Вернуться к приглашению
+                    </button>
+                    
+                    <button class="btn btn-outline-secondary btn-sm mt-2" onclick="location.reload()">
+                        <i class="bi bi-arrow-clockwise"></i> Начать сначала
+                    </button>
+                `;
+            }, 2000);
         }
 
         function createConfetti() {
