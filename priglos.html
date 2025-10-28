@@ -265,6 +265,7 @@
             display: flex;
             margin-bottom: 20px;
             border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
         }
         
         .tab-button {
@@ -275,6 +276,7 @@
             color: var(--dark);
             font-weight: 500;
             border-bottom: 3px solid transparent;
+            white-space: nowrap;
         }
         
         .tab-button.active {
@@ -517,6 +519,57 @@
             font-style: italic;
         }
         
+        /* Новые стили для пагинации истории розыгрышей */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        
+        .pagination button {
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .pagination button.active {
+            background: var(--accent);
+        }
+        
+        .pagination button:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .history-page {
+            display: none;
+        }
+        
+        .history-page.active {
+            display: block;
+        }
+        
+        .history-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        /* Уменьшаем ширину вкладок */
+        .compact-tabs .tab-button {
+            padding: 8px 12px;
+            font-size: 0.9rem;
+        }
+        
         @media (max-width: 768px) {
             .main-content {
                 flex-direction: column;
@@ -542,6 +595,15 @@
             .giveaway-history-header {
                 flex-direction: column;
                 align-items: flex-start;
+            }
+            
+            .history-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .pagination {
+                flex-wrap: wrap;
             }
         }
     </style>
@@ -592,9 +654,14 @@
                     <!-- Активные розыгрыши будут здесь -->
                 </div>
                 
-                <h2 style="margin-top: 30px;">История всех розыгрышей</h2>
-                <div id="all-giveaways-list">
-                    <!-- Все розыгрыши будут здесь -->
+                <h2 style="margin-top: 30px;">История розыгрышей</h2>
+                <div id="giveaways-history-container">
+                    <div id="giveaways-history-pages">
+                        <!-- Страницы истории будут здесь -->
+                    </div>
+                    <div class="pagination" id="giveaways-history-pagination">
+                        <!-- Пагинация будет здесь -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -608,7 +675,7 @@
                     <button class="close-admin" id="close-admin">Закрыть</button>
                 </div>
                 
-                <div class="tab-buttons">
+                <div class="tab-buttons compact-tabs">
                     <button class="tab-button active" data-tab="login">Вход</button>
                     <button class="tab-button" data-tab="giveaways">Розыгрыши</button>
                     <button class="tab-button" data-tab="participants">Участники</button>
@@ -726,6 +793,10 @@
         let currentGiveawayId = null;
         let selectedWinnerId = null;
         
+        // Переменные для пагинации истории розыгрышей
+        let currentHistoryPage = 1;
+        const historyItemsPerPage = 3; // Количество розыгрышей на странице
+        
         // Элементы DOM
         const currentGiveawaySelect = document.getElementById('current-giveaway-select');
         const participantTwitchInput = document.getElementById('participant-twitch');
@@ -735,7 +806,8 @@
         const registrationMessage = document.getElementById('registration-message');
         const currentGiveawayInfo = document.getElementById('current-giveaway-info');
         const activeGiveawaysMain = document.getElementById('active-giveaways-main');
-        const allGiveawaysList = document.getElementById('all-giveaways-list');
+        const giveawaysHistoryPages = document.getElementById('giveaways-history-pages');
+        const giveawaysHistoryPagination = document.getElementById('giveaways-history-pagination');
         
         const adminBtn = document.getElementById('admin-btn');
         const adminPanel = document.getElementById('admin-panel');
@@ -851,65 +923,121 @@
             });
         }
         
-        function renderAllGiveawaysList() {
-            allGiveawaysList.innerHTML = '';
+        function renderGiveawaysHistory() {
+            giveawaysHistoryPages.innerHTML = '';
+            giveawaysHistoryPagination.innerHTML = '';
             
             if (giveaways.length === 0) {
-                allGiveawaysList.innerHTML = '<p>Розыгрышей еще не было</p>';
+                giveawaysHistoryPages.innerHTML = '<p>Розыгрышей еще не было</p>';
                 return;
             }
             
             // Сортируем розыгрыши по дате создания (от новых к старым)
             const sortedGiveaways = [...giveaways].sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
             
-            sortedGiveaways.forEach(giveaway => {
-                const giveawayElement = document.createElement('div');
-                giveawayElement.className = 'giveaway-history-item';
+            // Рассчитываем количество страниц
+            const totalPages = Math.ceil(sortedGiveaways.length / historyItemsPerPage);
+            
+            // Создаем страницы
+            for (let page = 1; page <= totalPages; page++) {
+                const pageElement = document.createElement('div');
+                pageElement.className = `history-page ${page === currentHistoryPage ? 'active' : ''}`;
+                pageElement.id = `history-page-${page}`;
                 
-                const giveawayWinners = winners.filter(w => w.giveawayId === giveaway.id);
-                const participantCount = participants.filter(p => p.giveawayId === giveaway.id).length;
+                const startIndex = (page - 1) * historyItemsPerPage;
+                const endIndex = startIndex + historyItemsPerPage;
+                const pageGiveaways = sortedGiveaways.slice(startIndex, endIndex);
                 
-                let winnersHTML = '';
-                if (giveawayWinners.length > 0) {
-                    winnersHTML = `
-                        <div class="winners-grid">
-                            ${giveawayWinners.map(winner => `
-                                <div class="winner-card ${winner.confirmed ? 'confirmed' : ''}">
-                                    <div class="winner-name">
-                                        <a href="https://twitch.tv/${winner.twitch}" target="_blank" class="profile-link">${winner.twitch}</a>
-                                        ${winner.confirmed ? '✅' : ''}
+                pageGiveaways.forEach(giveaway => {
+                    const giveawayElement = document.createElement('div');
+                    giveawayElement.className = 'giveaway-history-item';
+                    
+                    const giveawayWinners = winners.filter(w => w.giveawayId === giveaway.id);
+                    const participantCount = participants.filter(p => p.giveawayId === giveaway.id).length;
+                    
+                    let winnersHTML = '';
+                    if (giveawayWinners.length > 0) {
+                        winnersHTML = `
+                            <div class="winners-grid">
+                                ${giveawayWinners.map(winner => `
+                                    <div class="winner-card ${winner.confirmed ? 'confirmed' : ''}">
+                                        <div class="winner-name">
+                                            <a href="https://twitch.tv/${winner.twitch}" target="_blank" class="profile-link">${winner.twitch}</a>
+                                            ${winner.confirmed ? '✅' : ''}
+                                        </div>
+                                        <div class="history-date">${new Date(winner.date).toLocaleString()}</div>
                                     </div>
-                                    <div class="history-date">${new Date(winner.date).toLocaleString()}</div>
-                                </div>
-                            `).join('')}
+                                `).join('')}
+                            </div>
+                        `;
+                    } else {
+                        winnersHTML = '<p>Победители еще не определены</p>';
+                    }
+                    
+                    const statusText = giveaway.isCompleted ? 'Завершен' : 'Активен';
+                    const statusClass = giveaway.isCompleted ? 'status-completed' : 'status-active';
+                    
+                    giveawayElement.innerHTML = `
+                        <div class="giveaway-history-header">
+                            <div class="giveaway-history-title">
+                                ${giveaway.title} 
+                                <span class="status-badge ${statusClass}">${statusText}</span>
+                            </div>
+                            <div class="giveaway-history-date">
+                                ${new Date(giveaway.createdDate).toLocaleDateString('ru-RU')}
+                            </div>
                         </div>
+                        <div class="giveaway-history-prize">
+                            <strong>Приз:</strong> ${giveaway.prize}
+                        </div>
+                        <p><strong>Участников:</strong> ${participantCount}</p>
+                        <p><strong>Победители:</strong></p>
+                        ${winnersHTML}
                     `;
-                } else {
-                    winnersHTML = '<p>Победители еще не определены</p>';
+                    pageElement.appendChild(giveawayElement);
+                });
+                
+                giveawaysHistoryPages.appendChild(pageElement);
+            }
+            
+            // Создаем пагинацию
+            if (totalPages > 1) {
+                // Кнопка "Назад"
+                const prevButton = document.createElement('button');
+                prevButton.textContent = '←';
+                prevButton.disabled = currentHistoryPage === 1;
+                prevButton.addEventListener('click', () => {
+                    if (currentHistoryPage > 1) {
+                        currentHistoryPage--;
+                        renderGiveawaysHistory();
+                    }
+                });
+                giveawaysHistoryPagination.appendChild(prevButton);
+                
+                // Номера страниц
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageButton = document.createElement('button');
+                    pageButton.textContent = i;
+                    pageButton.className = i === currentHistoryPage ? 'active' : '';
+                    pageButton.addEventListener('click', () => {
+                        currentHistoryPage = i;
+                        renderGiveawaysHistory();
+                    });
+                    giveawaysHistoryPagination.appendChild(pageButton);
                 }
                 
-                const statusText = giveaway.isCompleted ? 'Завершен' : 'Активен';
-                const statusClass = giveaway.isCompleted ? 'status-completed' : 'status-active';
-                
-                giveawayElement.innerHTML = `
-                    <div class="giveaway-history-header">
-                        <div class="giveaway-history-title">
-                            ${giveaway.title} 
-                            <span class="status-badge ${statusClass}">${statusText}</span>
-                        </div>
-                        <div class="giveaway-history-date">
-                            ${new Date(giveaway.createdDate).toLocaleDateString('ru-RU')}
-                        </div>
-                    </div>
-                    <div class="giveaway-history-prize">
-                        <strong>Приз:</strong> ${giveaway.prize}
-                    </div>
-                    <p><strong>Участников:</strong> ${participantCount}</p>
-                    <p><strong>Победители:</strong></p>
-                    ${winnersHTML}
-                `;
-                allGiveawaysList.appendChild(giveawayElement);
-            });
+                // Кнопка "Вперед"
+                const nextButton = document.createElement('button');
+                nextButton.textContent = '→';
+                nextButton.disabled = currentHistoryPage === totalPages;
+                nextButton.addEventListener('click', () => {
+                    if (currentHistoryPage < totalPages) {
+                        currentHistoryPage++;
+                        renderGiveawaysHistory();
+                    }
+                });
+                giveawaysHistoryPagination.appendChild(nextButton);
+            }
         }
         
         function renderActiveGiveaways() {
@@ -986,7 +1114,7 @@
                         renderParticipantsTable();
                         renderWinnersManagement();
                         renderActiveGiveawaysMain();
-                        renderAllGiveawaysList();
+                        renderGiveawaysHistory();
                     }
                 });
             });
@@ -1107,7 +1235,7 @@
                         winners = winners.filter(w => w.id !== winnerId);
                         saveData();
                         renderWinnersManagement();
-                        renderAllGiveawaysList();
+                        renderGiveawaysHistory();
                     }
                 });
             });
@@ -1207,7 +1335,7 @@
             
             // Обновляем отображение
             renderWinnersManagement();
-            renderAllGiveawaysList();
+            renderGiveawaysHistory();
         }
         
         function confirmWinner() {
@@ -1242,6 +1370,9 @@
             
             showMessage(winnerMessage, `Победитель <strong>${winner.twitch}</strong> подтвержден и розыгрыш завершен! ✅`, 'success');
             
+            // Удаляем завершенный розыгрыш из селектора выбора розыгрыша для победителей
+            updateGiveawaySelectors();
+            
             // Сбрасываем выбор
             selectedWinnerId = null;
             selectedWinnerInfo.style.display = 'none';
@@ -1250,10 +1381,9 @@
             });
             
             // Обновляем все отображения
-            updateGiveawaySelectors();
             renderActiveGiveaways();
             renderActiveGiveawaysMain();
-            renderAllGiveawaysList();
+            renderGiveawaysHistory();
             renderWinnersManagement();
             
             // Сбрасываем выбор розыгрыша на главной странице
@@ -1325,7 +1455,7 @@
             
             // Обновляем отображение
             renderWinnersManagement();
-            renderAllGiveawaysList();
+            renderGiveawaysHistory();
         }
         
         function drawAllWinners() {
@@ -1420,7 +1550,7 @@
             
             // Обновляем отображение победителей
             renderWinnersManagement();
-            renderAllGiveawaysList();
+            renderGiveawaysHistory();
         }
         
         function deleteParticipant(participantId) {
@@ -1442,7 +1572,7 @@
                     renderActiveGiveaways();
                     updateGiveawaySelectors();
                     renderActiveGiveawaysMain();
-                    renderAllGiveawaysList();
+                    renderGiveawaysHistory();
                     showMessage(winnerMessage, 'Розыгрыш завершен', 'success');
                 }
             }
@@ -1521,7 +1651,7 @@
             
             // Обновляем списки розыгрышей
             renderActiveGiveawaysMain();
-            renderAllGiveawaysList();
+            renderGiveawaysHistory();
         }
         
         function showMessage(element, text, type) {
@@ -1596,7 +1726,7 @@
             updateGiveawaySelectors();
             renderActiveGiveaways();
             renderActiveGiveawaysMain();
-            renderAllGiveawaysList();
+            renderGiveawaysHistory();
         }
         
         function updateGiveaway() {
@@ -1650,7 +1780,7 @@
             updateGiveawaySelectors();
             renderActiveGiveaways();
             renderActiveGiveawaysMain();
-            renderAllGiveawaysList();
+            renderGiveawaysHistory();
             
             // Обновляем информацию о текущем розыгрыше, если он был выбран
             if (currentGiveawayId === giveawayId) {
@@ -1681,7 +1811,7 @@
             updateGiveawaySelectors();
             updateCurrentGiveawayInfo();
             renderActiveGiveawaysMain();
-            renderAllGiveawaysList();
+            renderGiveawaysHistory();
             
             // Обработчики событий
             registerParticipantBtn.addEventListener('click', registerParticipant);
