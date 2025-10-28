@@ -484,6 +484,39 @@
             color: white;
         }
         
+        .all-giveaways-list {
+            margin-top: 20px;
+        }
+        
+        .giveaway-history-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .giveaway-history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .giveaway-history-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .giveaway-history-date {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        .giveaway-history-prize {
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        
         @media (max-width: 768px) {
             .main-content {
                 flex-direction: column;
@@ -504,6 +537,11 @@
             
             .action-buttons {
                 flex-direction: column;
+            }
+            
+            .giveaway-history-header {
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
     </style>
@@ -539,6 +577,7 @@
                     <label for="participant-code">Кодовое слово</label>
                     <input type="text" id="participant-code" placeholder="Введите кодовое слово">
                 </div>
+                
                 <button id="register-participant">Зарегистрироваться</button>
                 
                 <h2 style="margin-top: 30px;">Текущий розыгрыш</h2>
@@ -548,9 +587,14 @@
             </div>
             
             <div class="card">
-                <h2>Победители</h2>
-                <div id="winners-list">
-                    <!-- Список победителей будет здесь -->
+                <h2>Активные розыгрыши</h2>
+                <div id="active-giveaways-main">
+                    <!-- Активные розыгрыши будут здесь -->
+                </div>
+                
+                <h2 style="margin-top: 30px;">История всех розыгрышей</h2>
+                <div id="all-giveaways-list">
+                    <!-- Все розыгрыши будут здесь -->
                 </div>
             </div>
         </div>
@@ -660,7 +704,7 @@
                     <div id="selected-winner-info" class="selected-winner-info" style="display: none;">
                         <p>Выбран победитель: <strong id="selected-winner-name"></strong></p>
                         <div class="action-buttons">
-                            <button id="confirm-winner" class="confirm-btn">Подтвердить победителя</button>
+                            <button id="confirm-winner" class="confirm-btn">Подтвердить победителя и завершить розыгрыш</button>
                             <button id="confirm-redraw" class="redraw-btn">Переизбрать победителя</button>
                         </div>
                     </div>
@@ -690,7 +734,8 @@
         const registerParticipantBtn = document.getElementById('register-participant');
         const registrationMessage = document.getElementById('registration-message');
         const currentGiveawayInfo = document.getElementById('current-giveaway-info');
-        const winnersList = document.getElementById('winners-list');
+        const activeGiveawaysMain = document.getElementById('active-giveaways-main');
+        const allGiveawaysList = document.getElementById('all-giveaways-list');
         
         const adminBtn = document.getElementById('admin-btn');
         const adminPanel = document.getElementById('admin-panel');
@@ -734,13 +779,14 @@
         }
         
         function updateGiveawaySelectors() {
-            // Обновляем селектор для участников
+            // Обновляем селектор для участников (только активные розыгрыши)
             currentGiveawaySelect.innerHTML = '<option value="">-- Выберите розыгрыш --</option>';
             giveawayFilter.innerHTML = '<option value="all">Все розыгрыши</option>';
             giveawayForWinner.innerHTML = '<option value="">-- Выберите розыгрыш --</option>';
             
             giveaways.forEach(giveaway => {
-                if (giveaway.isActive) {
+                // Для регистрации показываем только активные незавершенные розыгрыши
+                if (giveaway.isActive && !giveaway.isCompleted) {
                     currentGiveawaySelect.innerHTML += `<option value="${giveaway.id}">${giveaway.title}</option>`;
                 }
                 
@@ -775,49 +821,95 @@
             `;
         }
         
-        function renderWinners() {
-            winnersList.innerHTML = '';
+        function renderActiveGiveawaysMain() {
+            activeGiveawaysMain.innerHTML = '';
             
-            if (winners.length === 0) {
-                winnersList.innerHTML = '<p>Победители еще не определены</p>';
+            const activeGiveaways = giveaways.filter(g => g.isActive && !g.isCompleted);
+            
+            if (activeGiveaways.length === 0) {
+                activeGiveawaysMain.innerHTML = '<p>Нет активных розыгрышей в данный момент</p>';
                 return;
             }
             
-            // Группируем победителей по розыгрышам
-            const winnersByGiveaway = {};
-            winners.forEach(winner => {
-                if (!winnersByGiveaway[winner.giveawayId]) {
-                    winnersByGiveaway[winner.giveawayId] = [];
-                }
-                winnersByGiveaway[winner.giveawayId].push(winner);
-            });
-            
-            // Отображаем победителей по розыгрышам
-            for (const giveawayId in winnersByGiveaway) {
-                const giveaway = giveaways.find(g => g.id === giveawayId);
-                if (!giveaway) continue;
-                
-                const giveawayWinners = winnersByGiveaway[giveawayId];
-                
+            activeGiveaways.forEach(giveaway => {
                 const giveawayElement = document.createElement('div');
-                giveawayElement.className = 'giveaway-card';
+                giveawayElement.className = 'giveaway-card active';
+                
+                const winnerCount = winners.filter(w => w.giveawayId === giveaway.id).length;
+                const participantCount = participants.filter(p => p.giveawayId === giveaway.id).length;
+                
                 giveawayElement.innerHTML = `
                     <h3>${giveaway.title}</h3>
-                    <p>Приз: ${giveaway.prize}</p>
-                    <div class="winners-grid">
-                        ${giveawayWinners.map(winner => `
-                            <div class="winner-card ${winner.confirmed ? 'confirmed' : ''}">
-                                <div class="winner-name">
-                                    <a href="https://twitch.tv/${winner.twitch}" target="_blank" class="profile-link">${winner.twitch}</a>
-                                    ${winner.confirmed ? '✅' : ''}
-                                </div>
-                                <div class="history-date">${new Date(winner.date).toLocaleString()}</div>
-                            </div>
-                        `).join('')}
-                    </div>
+                    <p><strong>Приз:</strong> ${giveaway.prize}</p>
+                    <p><strong>Кодовое слово:</strong> ${giveaway.codeWord}</p>
+                    <p><strong>Количество победителей:</strong> ${giveaway.winnersCount}</p>
+                    <p><strong>Участников:</strong> ${participantCount}</p>
+                    <p><strong>Выбрано победителей:</strong> ${winnerCount}</p>
+                    <p><strong>Дата создания:</strong> ${new Date(giveaway.createdDate).toLocaleDateString('ru-RU')}</p>
                 `;
-                winnersList.appendChild(giveawayElement);
+                activeGiveawaysMain.appendChild(giveawayElement);
+            });
+        }
+        
+        function renderAllGiveawaysList() {
+            allGiveawaysList.innerHTML = '';
+            
+            if (giveaways.length === 0) {
+                allGiveawaysList.innerHTML = '<p>Розыгрышей еще не было</p>';
+                return;
             }
+            
+            // Сортируем розыгрыши по дате создания (от новых к старым)
+            const sortedGiveaways = [...giveaways].sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
+            
+            sortedGiveaways.forEach(giveaway => {
+                const giveawayElement = document.createElement('div');
+                giveawayElement.className = 'giveaway-history-item';
+                
+                const giveawayWinners = winners.filter(w => w.giveawayId === giveaway.id);
+                const participantCount = participants.filter(p => p.giveawayId === giveaway.id).length;
+                
+                let winnersHTML = '';
+                if (giveawayWinners.length > 0) {
+                    winnersHTML = `
+                        <div class="winners-grid">
+                            ${giveawayWinners.map(winner => `
+                                <div class="winner-card ${winner.confirmed ? 'confirmed' : ''}">
+                                    <div class="winner-name">
+                                        <a href="https://twitch.tv/${winner.twitch}" target="_blank" class="profile-link">${winner.twitch}</a>
+                                        ${winner.confirmed ? '✅' : ''}
+                                    </div>
+                                    <div class="history-date">${new Date(winner.date).toLocaleString()}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                } else {
+                    winnersHTML = '<p>Победители еще не определены</p>';
+                }
+                
+                const statusText = giveaway.isCompleted ? 'Завершен' : 'Активен';
+                const statusClass = giveaway.isCompleted ? 'status-completed' : 'status-active';
+                
+                giveawayElement.innerHTML = `
+                    <div class="giveaway-history-header">
+                        <div class="giveaway-history-title">
+                            ${giveaway.title} 
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="giveaway-history-date">
+                            ${new Date(giveaway.createdDate).toLocaleDateString('ru-RU')}
+                        </div>
+                    </div>
+                    <div class="giveaway-history-prize">
+                        <strong>Приз:</strong> ${giveaway.prize}
+                    </div>
+                    <p><strong>Участников:</strong> ${participantCount}</p>
+                    <p><strong>Победители:</strong></p>
+                    ${winnersHTML}
+                `;
+                allGiveawaysList.appendChild(giveawayElement);
+            });
         }
         
         function renderActiveGiveaways() {
@@ -893,7 +985,8 @@
                         updateGiveawaySelectors();
                         renderParticipantsTable();
                         renderWinnersManagement();
-                        renderWinners();
+                        renderActiveGiveawaysMain();
+                        renderAllGiveawaysList();
                     }
                 });
             });
@@ -1014,7 +1107,7 @@
                         winners = winners.filter(w => w.id !== winnerId);
                         saveData();
                         renderWinnersManagement();
-                        renderWinners();
+                        renderAllGiveawaysList();
                     }
                 });
             });
@@ -1108,13 +1201,13 @@
             }
             
             winMessage += `<div>🎲 Выбран случайным образом</div>`;
-            winMessage += `<div><strong>Не забудьте подтвердить победителя!</strong></div>`;
+            winMessage += `<div><strong>Не забудьте подтвердить победителя и завершить розыгрыш!</strong></div>`;
             
             showMessage(winnerMessage, winMessage, 'success');
             
-            // Обновляем отображение победителей
-            renderWinners();
+            // Обновляем отображение
             renderWinnersManagement();
+            renderAllGiveawaysList();
         }
         
         function confirmWinner() {
@@ -1129,11 +1222,25 @@
                 return;
             }
             
+            const winner = winners[winnerIndex];
+            const giveawayId = winner.giveawayId;
+            const giveawayIndex = giveaways.findIndex(g => g.id === giveawayId);
+            
+            if (giveawayIndex === -1) {
+                showMessage(winnerMessage, 'Розыгрыш не найден', 'error');
+                return;
+            }
+            
             // Подтверждаем победителя
             winners[winnerIndex].confirmed = true;
+            
+            // Автоматически завершаем розыгрыш
+            giveaways[giveawayIndex].isCompleted = true;
+            giveaways[giveawayIndex].completedDate = new Date().toISOString();
+            
             saveData();
             
-            showMessage(winnerMessage, `Победитель <strong>${winners[winnerIndex].twitch}</strong> подтвержден! ✅`, 'success');
+            showMessage(winnerMessage, `Победитель <strong>${winner.twitch}</strong> подтвержден и розыгрыш завершен! ✅`, 'success');
             
             // Сбрасываем выбор
             selectedWinnerId = null;
@@ -1142,9 +1249,17 @@
                 card.classList.remove('selected');
             });
             
-            // Обновляем отображение
-            renderWinners();
+            // Обновляем все отображения
+            updateGiveawaySelectors();
+            renderActiveGiveaways();
+            renderActiveGiveawaysMain();
+            renderAllGiveawaysList();
             renderWinnersManagement();
+            
+            // Сбрасываем выбор розыгрыша на главной странице
+            currentGiveawayId = null;
+            currentGiveawaySelect.value = '';
+            updateCurrentGiveawayInfo();
         }
         
         function redrawWinner() {
@@ -1209,8 +1324,8 @@
             });
             
             // Обновляем отображение
-            renderWinners();
             renderWinnersManagement();
+            renderAllGiveawaysList();
         }
         
         function drawAllWinners() {
@@ -1304,8 +1419,8 @@
             showMessage(winnerMessage, `Победители: ${winnersText}`, 'success');
             
             // Обновляем отображение победителей
-            renderWinners();
             renderWinnersManagement();
+            renderAllGiveawaysList();
         }
         
         function deleteParticipant(participantId) {
@@ -1322,9 +1437,12 @@
                 const giveawayIndex = giveaways.findIndex(g => g.id === giveawayId);
                 if (giveawayIndex !== -1) {
                     giveaways[giveawayIndex].isCompleted = true;
+                    giveaways[giveawayIndex].completedDate = new Date().toISOString();
                     saveData();
                     renderActiveGiveaways();
-                    updateCurrentGiveawayInfo();
+                    updateGiveawaySelectors();
+                    renderActiveGiveawaysMain();
+                    renderAllGiveawaysList();
                     showMessage(winnerMessage, 'Розыгрыш завершен', 'success');
                 }
             }
@@ -1400,6 +1518,10 @@
             if (isAdminLoggedIn) {
                 renderParticipantsTable();
             }
+            
+            // Обновляем списки розыгрышей
+            renderActiveGiveawaysMain();
+            renderAllGiveawaysList();
         }
         
         function showMessage(element, text, type) {
@@ -1473,6 +1595,8 @@
             // Обновляем селекторы и списки
             updateGiveawaySelectors();
             renderActiveGiveaways();
+            renderActiveGiveawaysMain();
+            renderAllGiveawaysList();
         }
         
         function updateGiveaway() {
@@ -1525,6 +1649,8 @@
             // Обновляем селекторы и списки
             updateGiveawaySelectors();
             renderActiveGiveaways();
+            renderActiveGiveawaysMain();
+            renderAllGiveawaysList();
             
             // Обновляем информацию о текущем розыгрыше, если он был выбран
             if (currentGiveawayId === giveawayId) {
@@ -1554,7 +1680,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             updateGiveawaySelectors();
             updateCurrentGiveawayInfo();
-            renderWinners();
+            renderActiveGiveawaysMain();
+            renderAllGiveawaysList();
             
             // Обработчики событий
             registerParticipantBtn.addEventListener('click', registerParticipant);
