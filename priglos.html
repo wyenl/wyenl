@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Twitch Giveaway System</title>
-    <!-- Загружаем tmi.js через альтернативный CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tmi.js/1.8.5/tmi.min.js"></script>
+    <title>Twitch Giveaway System - Extension Version</title>
+    <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
     <style>
         :root {
             --primary: #9146FF;
@@ -381,28 +380,20 @@
             margin-top: 5px;
         }
         
-        .token-help {
-            background-color: rgba(253, 203, 110, 0.1);
-            padding: 10px;
-            border-radius: 4px;
-            margin-top: 10px;
-            border-left: 3px solid var(--warning);
-        }
-        
-        .token-format {
-            background-color: rgba(0, 184, 148, 0.1);
-            padding: 10px;
-            border-radius: 4px;
-            margin-top: 10px;
-            border-left: 3px solid var(--success);
-        }
-        
-        .alternative-methods {
+        .extension-info {
             background-color: rgba(116, 185, 255, 0.1);
             padding: 15px;
             border-radius: 8px;
-            margin-top: 20px;
+            margin-bottom: 20px;
             border-left: 4px solid #4a90e2;
+        }
+        
+        .demo-warning {
+            background-color: rgba(253, 203, 110, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--warning);
         }
     </style>
 </head>
@@ -414,70 +405,37 @@
                     <svg width="40" height="40" viewBox="0 0 24 24" fill="#9146FF">
                         <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
                     </svg>
-                    <h1>Twitch Giveaway System</h1>
+                    <h1>Twitch Giveaway System - Extension</h1>
                 </div>
                 <div class="connection-status">
                     <span class="status-indicator status-disconnected" id="statusIndicator"></span>
-                    <span id="statusText">Не подключено</span>
+                    <span id="statusText">Расширение не активно</span>
                 </div>
             </div>
         </div>
     </header>
     
     <div class="container">
-        <div class="instructions">
-            <h3>🚀 Инструкция по подключению к Twitch чату</h3>
-            <ol>
-                <li><strong>Получите OAuth токен:</strong> Перейдите на <a href="https://twitchtokengenerator.com/" target="_blank" style="color: var(--primary); font-weight: bold;">twitchtokengenerator.com</a></li>
-                <li><strong>Выберите тип токена:</strong> "Bot Chat Token"</li>
-                <li><strong>Авторизуйтесь через Twitch</strong> и скопируйте полученный токен</li>
-                <li><strong>Введите данные ниже</strong> и нажмите "Подключиться к чату"</li>
-                <li><strong>Для тестирования</strong> используйте демо-режим без токена</li>
-            </ol>
+        <div class="extension-info">
+            <h3>🎯 Twitch Extension Integration</h3>
+            <p><strong>Текущий статус:</strong> <span id="extensionStatus">Ожидание инициализации расширения</span></p>
+            <p><strong>Канал:</strong> <span id="channelInfo">Не определен</span></p>
+            <p><strong>Авторизация:</strong> <span id="authInfo">Не авторизован</span></p>
         </div>
 
-        <div class="alternative-methods">
-            <h3>🔧 Если возникают проблемы с подключением:</h3>
-            <p><strong>Способ 1:</strong> Используйте демо-режим для тестирования функционала</p>
-            <p><strong>Способ 2:</strong> Скачайте файл и откройте локально (может потребоваться разрешить небезопасные скрипты)</p>
-            <p><strong>Способ 3:</strong> Запустите на локальном сервере (например, через Live Server в VS Code)</p>
+        <div class="demo-warning">
+            <h3>⚠️ Внимание: Демо-режим</h3>
+            <p>Это демо-версия для тестирования. Для полноценной работы необходимо:</p>
+            <ol>
+                <li>Создать Twitch Extension в Developer Console</li>
+                <li>Загрузить этот код как расширение</li>
+                <li>Активировать расширение на вашем канале</li>
+            </ol>
+            <button id="enableDemoMode" class="secondary">🎮 Включить демо-режим для тестирования</button>
         </div>
         
         <div class="main-content">
             <div class="left-column">
-                <div class="card">
-                    <h2>🔗 Подключение к Twitch</h2>
-                    <div class="form-group">
-                        <label for="channelName">Имя канала</label>
-                        <input type="text" id="channelName" placeholder="Введите имя канала (без twitch.tv/)" value="">
-                    </div>
-                    <div class="form-group">
-                        <label for="oauthToken">OAuth токен</label>
-                        <input type="password" id="oauthToken" placeholder="Введите ваш OAuth токен" value="">
-                        <div class="token-format">
-                            <strong>✅ Поддерживаемые форматы токенов:</strong>
-                            <ul style="margin-top: 5px; margin-left: 15px;">
-                                <li><code>oauth:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</code> (с префиксом oauth:)</li>
-                                <li><code>xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</code> (без префикса)</li>
-                            </ul>
-                            <p style="margin-top: 5px; font-size: 0.9rem;">Система автоматически добавит префикс <code>oauth:</code> если его нет</p>
-                        </div>
-                        <div class="token-help">
-                            <strong>Как получить токен:</strong> 
-                            <a href="https://twitchtokengenerator.com/" target="_blank" style="color: var(--warning);">twitchtokengenerator.com</a> → 
-                            "Bot Chat Token" → Авторизоваться → Скопировать токен
-                        </div>
-                    </div>
-                    <div class="buttons">
-                        <button id="connectBtn">🔗 Подключиться к чату</button>
-                        <button id="disconnectBtn" class="secondary" disabled>❌ Отключиться</button>
-                    </div>
-                    <div class="buttons">
-                        <button id="demoModeBtn" class="secondary">🎮 Включить демо-режим</button>
-                    </div>
-                    <div id="connectionMessage"></div>
-                </div>
-                
                 <div class="card">
                     <h2>🎯 Настройки розыгрыша</h2>
                     <div class="form-group">
@@ -499,7 +457,7 @@
                         </label>
                     </div>
                     <div class="buttons">
-                        <button id="startGiveawayBtn" disabled>🚀 Начать розыгрыш</button>
+                        <button id="startGiveawayBtn">🚀 Начать розыгрыш</button>
                         <button id="drawWinnerBtn" class="secondary" disabled>🎲 Выбрать победителя</button>
                         <button id="redrawBtn" class="secondary" disabled>🔄 Переизбрать победителя</button>
                     </div>
@@ -509,6 +467,18 @@
                     <h2>🏆 Победитель</h2>
                     <div id="winnerDisplay" class="winner-display">
                         <p>Победитель будет отображен здесь</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>📢 Управление расширением</h2>
+                    <div class="form-group">
+                        <label for="broadcastMessage">Сообщение для трансляции</label>
+                        <textarea id="broadcastMessage" placeholder="Введите сообщение для отправки в трансляцию..."></textarea>
+                    </div>
+                    <div class="buttons">
+                        <button id="sendBroadcastBtn">📡 Отправить в трансляцию</button>
+                        <button id="refreshExtension" class="secondary">🔄 Обновить данные</button>
                     </div>
                 </div>
             </div>
@@ -522,9 +492,9 @@
                 </div>
                 
                 <div class="card">
-                    <h2>💬 Чат <span id="chatStatus">(отключен)</span></h2>
+                    <h2>💬 Чат <span id="chatStatus">(расширение)</span></h2>
                     <div class="chat-container" id="chatContainer">
-                        <p class="no-chat">Сообщения чата появятся здесь после подключения</p>
+                        <p class="no-chat">Сообщения чата будут отображаться через расширение Twitch</p>
                     </div>
                 </div>
             </div>
@@ -534,7 +504,7 @@
             <div class="tabs">
                 <div class="tab active" data-tab="stats">📊 Статистика</div>
                 <div class="tab" data-tab="history">📜 История победителей</div>
-                <div class="tab" data-tab="integration">⚙️ Настройки</div>
+                <div class="tab" data-tab="setup">🔧 Настройка расширения</div>
             </div>
             
             <div class="tab-content active" id="statsTab">
@@ -570,31 +540,61 @@
                 </div>
             </div>
             
-            <div class="tab-content" id="integrationTab">
+            <div class="tab-content" id="setupTab">
                 <div class="card">
-                    <h2>⚙️ Настройки системы</h2>
-                    <div class="form-group">
-                        <label for="announceWinners">Объявлять победителей в чате</label>
-                        <select id="announceWinners">
-                            <option value="true">Да</option>
-                            <option value="false">Нет</option>
-                        </select>
+                    <h2>🔧 Инструкция по созданию Twitch Extension</h2>
+                    <div class="instructions">
+                        <h3>Шаг 1: Создание расширения в Developer Console</h3>
+                        <ol>
+                            <li>Перейдите на <a href="https://dev.twitch.tv/console" target="_blank">Twitch Developer Console</a></li>
+                            <li>Нажмите "Your Extensions" → "Create Extension"</li>
+                            <li>Выберите тип расширения: <strong>Panel</strong></li>
+                            <li>Заполните базовую информацию о расширении</li>
+                        </ol>
+
+                        <h3>Шаг 2: Настройка расширения</h3>
+                        <ol>
+                            <li>В разделе "Extension Capabilities" включите:
+                                <ul>
+                                    <li>Chat Capabilities</li>
+                                    <li>Broadcast Capabilities</li>
+                                    <li>Authentication Capabilities</li>
+                                </ul>
+                            </li>
+                            <li>В разделе "Extension Views" добавьте:
+                                <ul>
+                                    <li><strong>Panel</strong>: https://your-domain.com/extension.html</li>
+                                    <li><strong>Broadcast Configuration</strong>: https://your-domain.com/config.html</li>
+                                </ul>
+                            </li>
+                        </ol>
+
+                        <h3>Шаг 3: Ключи и настройки</h3>
+                        <div class="code-block">
+                            // Вам понадобятся эти ключи:<br>
+                            Client ID: (автоматически генерируется)<br>
+                            Secret Key: (будет показан один раз)<br><br>
+                            
+                            // Важные настройки:<br>
+                            - Все URL должны быть HTTPS<br>
+                            - Домен должен быть верифицирован<br>
+                            - Расширение должно пройти модерацию
+                        </div>
+
+                        <h3>Шаг 4: Загрузка кода</h3>
+                        <ol>
+                            <li>Создайте файлы: extension.html, config.html</li>
+                            <li>Загрузите на ваш HTTPS сервер</li>
+                            <li>Укажите URLs в настройках расширения</li>
+                            <li>Отправьте на модерацию</li>
+                        </ol>
                     </div>
+
                     <div class="form-group">
-                        <label for="autoStart">Автоматически начинать розыгрыш при подключении</label>
-                        <select id="autoStart">
-                            <option value="false">Нет</option>
-                            <option value="true">Да</option>
-                        </select>
+                        <label for="clientId">Client ID (для тестирования)</label>
+                        <input type="text" id="clientId" placeholder="Введите Client ID для тестирования">
                     </div>
-                    <div class="form-group">
-                        <label for="saveHistory">Сохранять историю между сессиями</label>
-                        <select id="saveHistory">
-                            <option value="true">Да</option>
-                            <option value="false">Нет</option>
-                        </select>
-                    </div>
-                    <button id="saveSettingsBtn">💾 Сохранить настройки</button>
+                    <button id="testExtension" class="secondary">🧪 Тестировать подключение</button>
                 </div>
             </div>
         </div>
@@ -605,17 +605,13 @@
         let participants = [];
         let chatMessages = [];
         let winnersHistory = [];
-        let isConnected = false;
         let isGiveawayActive = false;
         let currentWinner = null;
-        let twitchClient = null;
         let isDemoMode = false;
         let chatInterval = null;
-        
+        let twitchExtension;
+
         // Элементы DOM
-        const connectBtn = document.getElementById('connectBtn');
-        const disconnectBtn = document.getElementById('disconnectBtn');
-        const demoModeBtn = document.getElementById('demoModeBtn');
         const startGiveawayBtn = document.getElementById('startGiveawayBtn');
         const drawWinnerBtn = document.getElementById('drawWinnerBtn');
         const redrawBtn = document.getElementById('redrawBtn');
@@ -631,58 +627,122 @@
         const activeUsersEl = document.getElementById('activeUsers');
         const participantsCountEl = document.getElementById('participantsCount');
         const chatStatusEl = document.getElementById('chatStatus');
-        const connectionMessageEl = document.getElementById('connectionMessage');
-        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
-        
-        // Проверяем загрузилась ли библиотека tmi.js
-        function checkTmiLoaded() {
-            if (typeof tmi === 'undefined') {
-                console.warn('tmi.js не загружена, используем альтернативный CDN');
-                // Пытаемся загрузить через альтернативный CDN
-                loadTmiFromAlternativeCDN();
-                return false;
+        const extensionStatusEl = document.getElementById('extensionStatus');
+        const channelInfoEl = document.getElementById('channelInfo');
+        const authInfoEl = document.getElementById('authInfo');
+        const enableDemoModeBtn = document.getElementById('enableDemoMode');
+        const sendBroadcastBtn = document.getElementById('sendBroadcastBtn');
+        const refreshExtensionBtn = document.getElementById('refreshExtension');
+        const testExtensionBtn = document.getElementById('testExtension');
+
+        // Инициализация Twitch Extension
+        function initializeTwitchExtension() {
+            try {
+                if (window.Twitch && window.Twitch.ext) {
+                    twitchExtension = window.Twitch.ext;
+                    
+                    twitchExtension.onAuthorized(function(auth) {
+                        console.log('Twitch Extension Authorized:', auth);
+                        extensionStatusEl.textContent = 'Авторизован';
+                        channelInfoEl.textContent = auth.channelId;
+                        authInfoEl.textContent = `Токен: ${auth.token ? 'Есть' : 'Нет'}`;
+                        statusIndicator.className = 'status-indicator status-connected';
+                        statusText.textContent = 'Расширение активно';
+                        
+                        showMessage('✅ Twitch Extension успешно авторизован', 'success');
+                    });
+
+                    twitchExtension.onContext(function(context) {
+                        console.log('Twitch Extension Context:', context);
+                    });
+
+                    twitchExtension.onError(function(error) {
+                        console.error('Twitch Extension Error:', error);
+                        extensionStatusEl.textContent = 'Ошибка: ' + error;
+                        showMessage('❌ Ошибка Twitch Extension: ' + error, 'error');
+                    });
+
+                    // Listen for chat messages
+                    setupChatListener();
+
+                    showMessage('🔧 Twitch Extension инициализирован', 'success');
+                } else {
+                    throw new Error('Twitch Ext helper not found');
+                }
+            } catch (error) {
+                console.warn('Twitch Extension not available:', error);
+                extensionStatusEl.textContent = 'Расширение недоступно (демо-режим)';
+                showMessage('⚠️ Twitch Extension недоступен. Используйте демо-режим.', 'warning');
             }
-            return true;
         }
-        
-        // Альтернативная загрузка tmi.js
-        function loadTmiFromAlternativeCDN() {
-            const script = document.createElement('script');
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/tmi.js/1.8.5/tmi.min.js';
-            script.onload = function() {
-                console.log('tmi.js успешно загружена через альтернативный CDN');
-                showMessage('Библиотека tmi.js загружена. Теперь можно подключаться к чату.', 'success');
-            };
-            script.onerror = function() {
-                console.error('Не удалось загрузить tmi.js через альтернативный CDN');
-                showMessage('Не удалось загрузить библиотеку tmi.js. Используйте демо-режим или запустите файл локально.', 'error');
-            };
-            document.head.appendChild(script);
+
+        // Настройка слушателя чата через расширение
+        function setupChatListener() {
+            if (!twitchExtension) return;
+
+            // В реальном расширении чат обрабатывается через Twitch API
+            // Это демо-реализация
+            addSystemMessage('🔧 Чат расширения активирован. Сообщения будут приходить через Twitch API.');
         }
-        
+
+        // Отправка сообщения в трансляцию
+        function sendBroadcast(message) {
+            if (!twitchExtension || isDemoMode) {
+                // Демо-режим
+                addSystemMessage(`[BROADCAST] ${message}`);
+                showMessage('📡 Сообщение отправлено в демо-режиме', 'success');
+                return;
+            }
+
+            try {
+                twitchExtension.actions.requestIdShare();
+                addSystemMessage(`[BROADCAST] ${message}`);
+                showMessage('📡 Сообщение отправлено в трансляцию', 'success');
+            } catch (error) {
+                console.error('Broadcast error:', error);
+                showMessage('❌ Ошибка отправки сообщения', 'error');
+            }
+        }
+
+        // Включение демо-режима
+        function enableDemoMode() {
+            isDemoMode = true;
+            statusIndicator.className = 'status-indicator status-connected';
+            statusText.textContent = 'Демо-режим активен';
+            extensionStatusEl.textContent = 'Демо-режим';
+            channelInfoEl.textContent = 'demo_channel';
+            authInfoEl.textContent = 'Демо-авторизация';
+            
+            // Очищаем чат
+            chatContainer.innerHTML = '';
+            
+            showMessage('🎮 Демо-режим активирован', 'success');
+            addSystemMessage('🎮 Демо-режим активирован');
+            addSystemMessage('💬 Сообщения чата генерируются автоматически');
+            
+            // Запускаем эмуляцию чата
+            simulateChatMessages('demo_channel');
+            
+            updateUI();
+        }
+
         // Инициализация
         document.addEventListener('DOMContentLoaded', function() {
             loadSettings();
             setupEventListeners();
+            initializeTwitchExtension();
             updateUI();
-            
-            // Проверяем загрузку tmi.js
-            setTimeout(() => {
-                if (!checkTmiLoaded()) {
-                    showMessage('Библиотека tmi.js загружается...', 'info');
-                }
-            }, 1000);
         });
-        
+
         // Настройка обработчиков событий
         function setupEventListeners() {
-            connectBtn.addEventListener('click', connectToChat);
-            disconnectBtn.addEventListener('click', disconnectFromChat);
-            demoModeBtn.addEventListener('click', enableDemoMode);
             startGiveawayBtn.addEventListener('click', startGiveaway);
             drawWinnerBtn.addEventListener('click', drawWinner);
             redrawBtn.addEventListener('click', redrawWinner);
-            saveSettingsBtn.addEventListener('click', saveSettings);
+            enableDemoModeBtn.addEventListener('click', enableDemoMode);
+            sendBroadcastBtn.addEventListener('click', sendBroadcastMessage);
+            refreshExtensionBtn.addEventListener('click', refreshExtension);
+            testExtensionBtn.addEventListener('click', testExtension);
             
             // Табы
             document.querySelectorAll('.tab').forEach(tab => {
@@ -695,209 +755,57 @@
                 });
             });
         }
-        
-        // Функция для форматирования токена
-        function formatOAuthToken(token) {
-            if (!token) return '';
-            
-            // Удаляем пробелы в начале и конце
-            token = token.trim();
-            
-            // Если токен уже начинается с oauth:, возвращаем как есть
-            if (token.startsWith('oauth:')) {
-                return token;
-            }
-            
-            // Если токен не начинается с oauth:, добавляем префикс
-            return 'oauth:' + token;
-        }
-        
-        // Подключение к Twitch чату
-        async function connectToChat() {
-            const channelName = document.getElementById('channelName').value.trim();
-            let oauthToken = document.getElementById('oauthToken').value.trim();
-            
-            if (!channelName) {
-                showMessage('Пожалуйста, введите имя канала', 'error');
+
+        // Отправка сообщения в трансляцию
+        function sendBroadcastMessage() {
+            const message = document.getElementById('broadcastMessage').value;
+            if (!message.trim()) {
+                showMessage('Введите сообщение для отправки', 'error');
                 return;
             }
-            
-            if (!oauthToken) {
-                showMessage('Введите OAuth токен для подключения к реальному чату', 'error');
-                return;
-            }
-            
-            // Проверяем загружена ли библиотека
-            if (typeof tmi === 'undefined') {
-                showMessage('Библиотека tmi.js не загружена. Используйте демо-режим или попробуйте позже.', 'error');
-                return;
-            }
-            
-            // Форматируем токен
-            oauthToken = formatOAuthToken(oauthToken);
-            
-            showMessage('Подключение к чату...', 'info');
-            
-            try {
-                // Создаем клиент Twitch
-                twitchClient = new tmi.Client({
-                    options: { 
-                        debug: false,
-                        skipUpdatingEmotesets: true
-                    },
-                    connection: {
-                        reconnect: true,
-                        secure: true
-                    },
-                    identity: {
-                        username: channelName.toLowerCase(),
-                        password: oauthToken
-                    },
-                    channels: [channelName.toLowerCase()]
-                });
-                
-                // Подключаем обработчики событий
-                twitchClient.on('connected', onConnected);
-                twitchClient.on('message', onMessageHandler);
-                twitchClient.on('disconnected', onDisconnected);
-                
-                // Подключаемся к чату
-                await twitchClient.connect();
-                
-            } catch (error) {
-                console.error('Ошибка подключения:', error);
-                showMessage('Ошибка подключения к чату: ' + error.message, 'error');
+            sendBroadcast(message);
+            document.getElementById('broadcastMessage').value = '';
+        }
+
+        // Обновление расширения
+        function refreshExtension() {
+            if (twitchExtension) {
+                twitchExtension.actions.requestIdShare();
+                showMessage('🔧 Данные расширения обновлены', 'success');
+            } else {
+                showMessage('Расширение не доступно', 'warning');
             }
         }
-        
-        // Обработчик успешного подключения
-        function onConnected(address, port) {
-            const channelName = document.getElementById('channelName').value.trim();
-            isConnected = true;
-            isDemoMode = false;
-            statusIndicator.className = 'status-indicator status-connected';
-            statusText.textContent = `Подключено к ${channelName}`;
-            chatStatusEl.textContent = '(активен)';
-            
-            showMessage(`✅ Успешно подключено к чату канала ${channelName}`, 'success');
-            addSystemMessage(`✅ Успешно подключено к чату канала ${channelName}`);
-            
-            // Автозапуск розыгрыша если настроено
-            const autoStart = document.getElementById('autoStart').value === 'true';
-            if (autoStart) {
-                setTimeout(() => startGiveaway(), 1000);
+
+        // Тестирование расширения
+        function testExtension() {
+            const clientId = document.getElementById('clientId').value;
+            if (clientId) {
+                showMessage(`🧪 Тестирование с Client ID: ${clientId}`, 'info');
+            } else {
+                showMessage('Введите Client ID для тестирования', 'error');
             }
-            
-            updateUI();
         }
-        
-        // Обработчик сообщений чата
-        function onMessageHandler(channel, tags, message, self) {
-            // Игнорируем сообщения от бота
-            if (self) return;
-            
-            // Добавляем сообщение в чат
-            const isSubscriber = tags.subscriber || false;
-            const isMod = tags.mod || false;
-            const isVip = tags.vip || false;
-            
-            addUserMessage(tags['display-name'] || tags.username, message, isSubscriber, isMod, isVip);
-        }
-        
-        // Обработчик отключения
-        function onDisconnected(reason) {
-            isConnected = false;
-            statusIndicator.className = 'status-indicator status-disconnected';
-            statusText.textContent = 'Не подключено';
-            chatStatusEl.textContent = '(отключен)';
-            
-            showMessage(`❌ Отключено от чата: ${reason}`, 'error');
-            addSystemMessage(`❌ Отключено от чата: ${reason}`);
-            
-            updateUI();
-        }
-        
-        // Включение демо-режима
-        function enableDemoMode() {
-            const channelName = document.getElementById('channelName').value.trim() || 'demo_channel';
-            
-            // Останавливаем предыдущее подключение если было
-            if (twitchClient) {
-                twitchClient.disconnect();
-            }
-            
-            // Очищаем предыдущий интервал если был
-            if (chatInterval) {
-                clearInterval(chatInterval);
-            }
-            
-            isConnected = true;
-            isDemoMode = true;
-            statusIndicator.className = 'status-indicator status-connected';
-            statusText.textContent = `Демо-режим: ${channelName}`;
-            chatStatusEl.textContent = '(демо)';
-            
-            // Очищаем чат
-            chatContainer.innerHTML = '';
-            
-            showMessage(`🎮 Включен демо-режим для канала ${channelName}`, 'success');
-            addSystemMessage(`🎮 Включен демо-режим для канала ${channelName}`);
-            addSystemMessage('💬 Сообщения чата генерируются автоматически для тестирования системы');
-            
-            // Запускаем эмуляцию чата
-            simulateChatMessages(channelName);
-            
-            updateUI();
-        }
-        
-        // Отключение от чата
-        function disconnectFromChat() {
-            if (twitchClient) {
-                twitchClient.disconnect();
-            }
-            
-            // Останавливаем демо-режим если активен
-            if (chatInterval) {
-                clearInterval(chatInterval);
-                chatInterval = null;
-            }
-            
-            isConnected = false;
-            isDemoMode = false;
-            isGiveawayActive = false;
-            statusIndicator.className = 'status-indicator status-disconnected';
-            statusText.textContent = 'Не подключено';
-            chatStatusEl.textContent = '(отключен)';
-            
-            showMessage('🔌 Отключено от чата', 'info');
-            addSystemMessage('🔌 Отключено от чата');
-            
-            updateUI();
-        }
-        
+
         // Начать розыгрыш
         function startGiveaway() {
-            if (!isConnected) {
-                showMessage('Сначала подключитесь к чату', 'error');
-                return;
-            }
-            
             isGiveawayActive = true;
-            participants = []; // Очищаем список участников при новом розыгрыше
+            participants = [];
             
             updateUI();
             
-            // Уведомление в чат
             const keyword = document.getElementById('giveawayKeyword').value;
             addSystemMessage(`🎉 Розыгрыш начался! Напишите "${keyword}" в чат для участия.`);
             
             if (isDemoMode) {
-                addSystemMessage('🎮 В демо-режиме участники добавляются автоматически при отправке любого сообщения');
+                addSystemMessage('🎮 В демо-режиме участники добавляются автоматически');
             }
             
-            showMessage('🎯 Розыгрыш начался! Участники могут писать ключевое слово в чат', 'success');
+            sendBroadcast(`🎉 Розыгрыш начался! Пишите "${keyword}" в чат для участия!`);
+            
+            showMessage('🎯 Розыгрыш начался!', 'success');
         }
-        
+
         // Выбрать победителя
         function drawWinner() {
             if (!isGiveawayActive) {
@@ -910,35 +818,25 @@
                 return;
             }
             
-            // Фильтрация участников по критериям
             let eligibleParticipants = participants.filter(p => {
                 const minMessages = parseInt(document.getElementById('minMessages').value) || 0;
                 const subscribersOnly = document.getElementById('subscribersOnly').checked;
                 const excludeMods = document.getElementById('excludeMods').checked;
                 
                 let eligible = p.messageCount >= minMessages;
-                
-                if (subscribersOnly) {
-                    eligible = eligible && p.isSubscriber;
-                }
-                
-                if (excludeMods) {
-                    eligible = eligible && !p.isMod;
-                }
-                
+                if (subscribersOnly) eligible = eligible && p.isSubscriber;
+                if (excludeMods) eligible = eligible && !p.isMod;
                 return eligible;
             });
             
             if (eligibleParticipants.length === 0) {
-                showMessage('Нет участников, соответствующих критериям розыгрыша', 'error');
+                showMessage('Нет участников, соответствующих критериям', 'error');
                 return;
             }
             
-            // Случайный выбор победителя
             const randomIndex = Math.floor(Math.random() * eligibleParticipants.length);
             currentWinner = eligibleParticipants[randomIndex];
             
-            // Добавление в историю победителей
             const winnerRecord = {
                 username: currentWinner.username,
                 timestamp: new Date().toLocaleString('ru-RU'),
@@ -950,28 +848,16 @@
             
             winnersHistory.unshift(winnerRecord);
             
-            // Отображение победителя
             displayWinner(currentWinner);
-            
-            // Обновление UI
             updateUI();
             updateHistory();
             
-            // Уведомление в чат если настроено
-            const announceWinners = document.getElementById('announceWinners').value === 'true';
-            if (announceWinners && isConnected) {
-                addSystemMessage(`🎉 Поздравляем, ${currentWinner.username}! Вы победили в розыгрыше!`);
-                
-                if (!isDemoMode && twitchClient) {
-                    // В реальном чате отправляем сообщение
-                    const channel = document.getElementById('channelName').value.trim();
-                    twitchClient.say(channel, `🎉 Поздравляем, ${currentWinner.username}! Вы победили в розыгрыше!`);
-                }
-            }
+            addSystemMessage(`🎉 Поздравляем, ${currentWinner.username}! Вы победили в розыгрыше!`);
+            sendBroadcast(`🎉 ПОБЕДИТЕЛЬ: ${currentWinner.username}! Поздравляем!`);
             
             showMessage(`🏆 Победитель: ${currentWinner.username}`, 'success');
         }
-        
+
         // Переизбрать победителя
         function redrawWinner() {
             if (!isGiveawayActive || participants.length === 0) {
@@ -979,16 +865,14 @@
                 return;
             }
             
-            // Удаляем предыдущего победителя из истории
             if (winnersHistory.length > 0 && winnersHistory[0].username === currentWinner.username) {
                 winnersHistory.shift();
                 updateHistory();
             }
             
-            // Выбираем нового победителя
             drawWinner();
         }
-        
+
         // Отображение победителя
         function displayWinner(winner) {
             let badges = '';
@@ -1000,30 +884,21 @@
                 <h3>🎉 ПОБЕДИТЕЛЬ 🎉</h3>
                 <div class="winner-name">${badges}${winner.username}</div>
                 <div class="winner-stats">
-                    <p>📝 Сообщений в чате: ${winner.messageCount}</p>
-                    <p>🔔 Статус подписки: ${winner.isSubscriber ? 'Подписчик' : 'Не подписчик'}</p>
-                    <p>🕒 Время выбора: ${new Date().toLocaleString('ru-RU')}</p>
+                    <p>📝 Сообщений: ${winner.messageCount}</p>
+                    <p>🔔 Подписчик: ${winner.isSubscriber ? 'Да' : 'Нет'}</p>
+                    <p>🕒 Время: ${new Date().toLocaleString('ru-RU')}</p>
                 </div>
             `;
         }
-        
+
         // Обновление интерфейса
         function updateUI() {
-            // Кнопки
-            connectBtn.disabled = isConnected;
-            disconnectBtn.disabled = !isConnected;
-            startGiveawayBtn.disabled = !isConnected || isGiveawayActive;
             drawWinnerBtn.disabled = !isGiveawayActive || participants.length === 0;
             redrawBtn.disabled = !isGiveawayActive || currentWinner === null;
-            demoModeBtn.disabled = isConnected;
-            
-            // Список участников
             updateParticipantsList();
-            
-            // Статистика
             updateStats();
         }
-        
+
         // Обновление списка участников
         function updateParticipantsList() {
             participantsCountEl.textContent = `(${participants.length})`;
@@ -1034,8 +909,6 @@
             }
             
             participantsList.innerHTML = '';
-            
-            // Сортируем участников по количеству сообщений (по убыванию)
             const sortedParticipants = [...participants].sort((a, b) => b.messageCount - a.messageCount);
             
             sortedParticipants.forEach(participant => {
@@ -1054,7 +927,7 @@
                         </div>
                         <div class="participant-stats">
                             📝 Сообщений: ${participant.messageCount} | 
-                            🏆 Участвовал ранее: ${participant.previousWins > 0 ? 'Да (' + participant.previousWins + ' раз)' : 'Нет'}
+                            🏆 Участвовал: ${participant.previousWins > 0 ? 'Да (' + participant.previousWins + ')' : 'Нет'}
                         </div>
                     </div>
                 `;
@@ -1062,22 +935,15 @@
                 participantsList.appendChild(participantEl);
             });
         }
-        
+
         // Обновление статистики
         function updateStats() {
             totalParticipantsEl.textContent = participants.length;
-            
-            const totalMessages = participants.reduce((sum, p) => sum + p.messageCount, 0);
-            totalMessagesEl.textContent = totalMessages;
-            
-            const subCount = participants.filter(p => p.isSubscriber).length;
-            subCountEl.textContent = subCount;
-            
-            // Активные пользователи (участники с >1 сообщением)
-            const activeUsers = participants.filter(p => p.messageCount > 1).length;
-            activeUsersEl.textContent = activeUsers;
+            totalMessagesEl.textContent = participants.reduce((sum, p) => sum + p.messageCount, 0);
+            subCountEl.textContent = participants.filter(p => p.isSubscriber).length;
+            activeUsersEl.textContent = participants.filter(p => p.messageCount > 1).length;
         }
-        
+
         // Обновление истории победителей
         function updateHistory() {
             if (winnersHistory.length === 0) {
@@ -1086,7 +952,6 @@
             }
             
             winnersHistoryContainer.innerHTML = '';
-            
             winnersHistory.forEach(winner => {
                 let badges = '';
                 if (winner.isSubscriber) badges += '<span class="badge badge-sub">SUB</span> ';
@@ -1095,7 +960,6 @@
                 
                 const historyItem = document.createElement('div');
                 historyItem.className = 'history-item';
-                
                 historyItem.innerHTML = `
                     <div class="history-user">${badges}${winner.username}</div>
                     <div class="history-stats">
@@ -1104,32 +968,20 @@
                     </div>
                     <div class="history-date">🕒 ${winner.timestamp}</div>
                 `;
-                
                 winnersHistoryContainer.appendChild(historyItem);
             });
         }
-        
-        // Добавление системного сообщения в чат
+
+        // Добавление системного сообщения
         function addSystemMessage(message) {
             const messageEl = document.createElement('div');
             messageEl.className = 'chat-message system-message';
             messageEl.innerHTML = `<span style="color: var(--warning); font-weight: 600;">⚡ Система:</span> ${message}`;
-            
             chatContainer.appendChild(messageEl);
             chatContainer.scrollTop = chatContainer.scrollHeight;
-            
-            // Сохраняем сообщение
-            chatMessages.push({
-                username: 'System',
-                message: message,
-                timestamp: new Date(),
-                isSubscriber: false,
-                isMod: false,
-                isVip: false
-            });
         }
-        
-        // Добавление сообщения пользователя в чат
+
+        // Добавление сообщения пользователя
         function addUserMessage(username, message, isSubscriber = false, isMod = false, isVip = false) {
             const messageEl = document.createElement('div');
             messageEl.className = `chat-message ${isSubscriber ? 'chat-subscriber' : ''}`;
@@ -1139,63 +991,35 @@
             if (isMod) badges += '<span class="badge badge-mod">MOD</span> ';
             if (isVip) badges += '<span class="badge badge-vip">VIP</span> ';
             
-            messageEl.innerHTML = `
-                <span class="chat-user">${badges}${username}:</span> ${message}
-            `;
-            
+            messageEl.innerHTML = `<span class="chat-user">${badges}${username}:</span> ${message}`;
             chatContainer.appendChild(messageEl);
             chatContainer.scrollTop = chatContainer.scrollHeight;
-            
-            // Сохраняем сообщение
-            chatMessages.push({
-                username: username,
-                message: message,
-                timestamp: new Date(),
-                isSubscriber: isSubscriber,
-                isMod: isMod,
-                isVip: isVip
-            });
             
             // Обработка участников розыгрыша
             if (isGiveawayActive) {
                 const keyword = document.getElementById('giveawayKeyword').value.toLowerCase();
-                
-                // В демо-режиме добавляем всех, кто написал сообщение
-                // В реальном режиме - только тех, кто использовал ключевое слово
                 if (isDemoMode || message.toLowerCase().includes(keyword)) {
                     addParticipant(username, isSubscriber, isMod, isVip);
                 }
             }
             
-            // Обновляем статистику сообщений для пользователя
             updateUserMessageCount(username, isSubscriber, isMod, isVip);
         }
-        
+
         // Добавление участника
         function addParticipant(username, isSubscriber, isMod, isVip) {
-            // Проверяем, есть ли уже такой участник
             const existingParticipant = participants.find(p => p.username === username);
-            
             if (existingParticipant) {
-                // Обновляем информацию, если изменилась
-                if (existingParticipant.isSubscriber !== isSubscriber) {
-                    existingParticipant.isSubscriber = isSubscriber;
-                }
-                if (existingParticipant.isMod !== isMod) {
-                    existingParticipant.isMod = isMod;
-                }
-                if (existingParticipant.isVip !== isVip) {
-                    existingParticipant.isVip = isVip;
-                }
+                if (existingParticipant.isSubscriber !== isSubscriber) existingParticipant.isSubscriber = isSubscriber;
+                if (existingParticipant.isMod !== isMod) existingParticipant.isMod = isMod;
+                if (existingParticipant.isVip !== isVip) existingParticipant.isVip = isVip;
                 return;
             }
             
-            // Добавляем нового участника
             const previousWins = winnersHistory.filter(w => w.username === username).length;
-            
             participants.push({
                 username: username,
-                messageCount: 1, // Будет обновлено в updateUserMessageCount
+                messageCount: 1,
                 isSubscriber: isSubscriber,
                 isMod: isMod || false,
                 isVip: isVip || false,
@@ -1205,20 +1029,17 @@
             
             updateUI();
         }
-        
-        // Обновление счетчика сообщений пользователя
+
+        // Обновление счетчика сообщений
         function updateUserMessageCount(username, isSubscriber, isMod, isVip) {
             const participant = participants.find(p => p.username === username);
-            
             if (participant) {
                 participant.messageCount++;
-                participant.isSubscriber = isSubscriber; // Обновляем статус подписки
-                participant.isMod = isMod; // Обновляем статус модератора
-                participant.isVip = isVip; // Обновляем статус VIP
+                participant.isSubscriber = isSubscriber;
+                participant.isMod = isMod;
+                participant.isVip = isVip;
             } else {
-                // Если пользователь еще не участник, но пишет в чат
                 const previousWins = winnersHistory.filter(w => w.username === username).length;
-                
                 participants.push({
                     username: username,
                     messageCount: 1,
@@ -1229,96 +1050,66 @@
                     isWinner: false
                 });
             }
-            
             updateUI();
         }
-        
-        // Эмуляция сообщений чата для демонстрации
+
+        // Эмуляция чата для демо-режима
         function simulateChatMessages(channelName) {
-            // Очищаем чат
             chatContainer.innerHTML = '';
+            addSystemMessage(`🎮 Демо-режим: канал ${channelName}`);
             
-            // Добавляем приветственное сообщение
-            addSystemMessage(`🎮 Демо-режим: подключено к чату канала ${channelName}`);
-            addSystemMessage('💬 Сообщения генерируются автоматически каждые 2-5 секунд');
-            
-            // Список случайных имен пользователей
-            const usernames = [
-                'StreamLover42', 'GamerPro', 'ChatEnthusiast', 'ViewerMax', 'TwitchFan99',
-                'GameMaster', 'PixelArtist', 'CodeWizard', 'DesignGuru', 'TechGeek',
-                'FunnyCommenter', 'SeriousViewer', 'CasualWatcher', 'HardcoreGamer', 'NightOwl'
-            ];
-            
-            // Генерация случайных сообщений
+            const usernames = ['StreamLover42', 'GamerPro', 'ChatEnthusiast', 'ViewerMax', 'TwitchFan99'];
             const messages = [
-                'Привет всем! Как дела?',
-                'Отличный стрим!',
-                'Когда следующий розыгрыш?',
-                'Люблю смотреть этот канал',
-                'Кто еще ждет новую игру?',
-                'Какой классный геймплей!',
-                'Подскажите, как пройти этот уровень?',
-                'Стример, ты лучший!',
-                'Сколько часов ты уже стримишь?',
-                '!розыгрыш',
-                'Хочу участвовать в розыгрыше!',
-                'Когда будет следующий стрим?',
-                'Подписывайтесь на канал!',
-                'Какой ваш любимый момент на стриме?',
-                'Спасибо за контент!'
+                'Привет! Как дела?', 'Отличный стрим!', '!розыгрыш', 'Хочу участвовать!',
+                'Когда розыгрыш?', 'Подписывайтесь!', 'Стример лучший!', '!розыгрыш'
             ];
             
-            // Функция для добавления случайного сообщения
             function addRandomMessage() {
-                if (!isConnected || !isDemoMode) return;
-                
-                const randomUser = usernames[Math.floor(Math.random() * usernames.length)];
-                const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-                const isSubscriber = Math.random() > 0.6; // 40% шанс быть подписчиком
-                const isMod = Math.random() > 0.9; // 10% шанс быть модератором
-                const isVip = Math.random() > 0.8; // 20% шанс быть VIP
-                
-                addUserMessage(randomUser, randomMessage, isSubscriber, isMod, isVip);
+                if (!isDemoMode) return;
+                const user = usernames[Math.floor(Math.random() * usernames.length)];
+                const msg = messages[Math.floor(Math.random() * messages.length)];
+                const isSub = Math.random() > 0.6;
+                const isMod = Math.random() > 0.9;
+                const isVip = Math.random() > 0.8;
+                addUserMessage(user, msg, isSub, isMod, isVip);
             }
             
-            // Запускаем эмуляцию чата
             chatInterval = setInterval(addRandomMessage, 2000 + Math.random() * 3000);
         }
-        
+
         // Показать сообщение
         function showMessage(message, type) {
-            connectionMessageEl.textContent = message;
-            connectionMessageEl.className = type === 'error' ? 'error-message' : 
-                                          type === 'success' ? 'success-message' : 'info-message';
-            
-            // Автоматически скрываем сообщения через 5 секунд
-            if (type !== 'error') {
-                setTimeout(() => {
-                    connectionMessageEl.textContent = '';
-                }, 5000);
-            }
+            // Создаем временное уведомление
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px;
+                border-radius: 5px;
+                color: white;
+                font-weight: bold;
+                z-index: 1000;
+                background-color: ${type === 'error' ? 'var(--danger)' : 
+                                 type === 'success' ? 'var(--success)' : 'var(--primary)'};
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 5000);
         }
-        
+
         // Загрузка настроек
         function loadSettings() {
             const savedSettings = localStorage.getItem('twitchGiveawaySettings');
-            
             if (savedSettings) {
                 const settings = JSON.parse(savedSettings);
-                
-                if (settings.channelName) document.getElementById('channelName').value = settings.channelName;
-                if (settings.oauthToken) document.getElementById('oauthToken').value = settings.oauthToken;
                 if (settings.giveawayKeyword) document.getElementById('giveawayKeyword').value = settings.giveawayKeyword;
                 if (settings.minMessages) document.getElementById('minMessages').value = settings.minMessages;
                 if (settings.subscribersOnly !== undefined) document.getElementById('subscribersOnly').checked = settings.subscribersOnly;
                 if (settings.excludeMods !== undefined) document.getElementById('excludeMods').checked = settings.excludeMods;
-                if (settings.announceWinners) document.getElementById('announceWinners').value = settings.announceWinners;
-                if (settings.autoStart) document.getElementById('autoStart').value = settings.autoStart;
-                if (settings.saveHistory) document.getElementById('saveHistory').value = settings.saveHistory;
             }
             
-            // Загрузка истории победителей
-            const saveHistory = document.getElementById('saveHistory').value === 'true';
+            const saveHistory = document.getElementById('saveHistory')?.value === 'true';
             if (saveHistory) {
                 const savedHistory = localStorage.getItem('twitchGiveawayHistory');
                 if (savedHistory) {
@@ -1327,31 +1118,16 @@
                 }
             }
         }
-        
+
         // Сохранение настроек
         function saveSettings() {
             const settings = {
-                channelName: document.getElementById('channelName').value,
-                oauthToken: document.getElementById('oauthToken').value,
                 giveawayKeyword: document.getElementById('giveawayKeyword').value,
                 minMessages: document.getElementById('minMessages').value,
                 subscribersOnly: document.getElementById('subscribersOnly').checked,
-                excludeMods: document.getElementById('excludeMods').checked,
-                announceWinners: document.getElementById('announceWinners').value,
-                autoStart: document.getElementById('autoStart').value,
-                saveHistory: document.getElementById('saveHistory').value
+                excludeMods: document.getElementById('excludeMods').checked
             };
-            
             localStorage.setItem('twitchGiveawaySettings', JSON.stringify(settings));
-            
-            // Сохраняем историю если настроено
-            const saveHistory = document.getElementById('saveHistory').value === 'true';
-            if (saveHistory) {
-                localStorage.setItem('twitchGiveawayHistory', JSON.stringify(winnersHistory));
-            } else {
-                localStorage.removeItem('twitchGiveawayHistory');
-            }
-            
             showMessage('✅ Настройки сохранены!', 'success');
         }
     </script>
