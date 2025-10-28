@@ -570,6 +570,34 @@
             font-size: 0.9rem;
         }
         
+        /* Стили для синхронизации */
+        .sync-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .sync-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        
+        .sync-btn {
+            background: var(--info);
+        }
+        
+        .backup-btn {
+            background: var(--success);
+        }
+        
+        .restore-btn {
+            background: var(--warning);
+            color: var(--dark);
+        }
+        
         @media (max-width: 768px) {
             .main-content {
                 flex-direction: column;
@@ -604,6 +632,10 @@
             
             .pagination {
                 flex-wrap: wrap;
+            }
+            
+            .sync-buttons {
+                flex-direction: column;
             }
         }
     </style>
@@ -646,6 +678,17 @@
                 <div id="current-giveaway-info">
                     <p>Выберите розыгрыш для просмотра информации</p>
                 </div>
+                
+                <div class="sync-section">
+                    <h3>Синхронизация данных</h3>
+                    <p>Сохраните данные для переноса на другое устройство</p>
+                    <div class="sync-buttons">
+                        <button id="export-data" class="backup-btn">Экспорт данных</button>
+                        <button id="import-data" class="restore-btn">Импорт данных</button>
+                        <input type="file" id="import-file" accept=".json" style="display: none;">
+                    </div>
+                    <div id="sync-message"></div>
+                </div>
             </div>
             
             <div class="card">
@@ -680,6 +723,7 @@
                     <button class="tab-button" data-tab="giveaways">Розыгрыши</button>
                     <button class="tab-button" data-tab="participants">Участники</button>
                     <button class="tab-button" data-tab="winners">Победители</button>
+                    <button class="tab-button" data-tab="sync">Синхронизация</button>
                 </div>
                 
                 <div id="login-tab" class="tab-content active">
@@ -780,6 +824,29 @@
                         <!-- Победители будут здесь -->
                     </div>
                 </div>
+                
+                <div id="sync-tab" class="tab-content">
+                    <h3>Синхронизация данных</h3>
+                    <p>Экспортируйте данные для переноса на другое устройство или импортируйте данные с другого устройства.</p>
+                    
+                    <div class="sync-buttons">
+                        <button id="admin-export-data" class="backup-btn">Экспорт всех данных</button>
+                        <button id="admin-import-data" class="restore-btn">Импорт данных</button>
+                        <input type="file" id="admin-import-file" accept=".json" style="display: none;">
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label for="data-textarea">Данные для импорта/экспорта</label>
+                        <textarea id="data-textarea" rows="10" placeholder="Вставьте сюда данные для импорта или скопируйте отсюда данные для экспорта"></textarea>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button id="copy-data" class="sync-btn">Копировать данные</button>
+                        <button id="paste-data" class="sync-btn">Вставить данные</button>
+                    </div>
+                    
+                    <div id="admin-sync-message"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -808,6 +875,20 @@
         const activeGiveawaysMain = document.getElementById('active-giveaways-main');
         const giveawaysHistoryPages = document.getElementById('giveaways-history-pages');
         const giveawaysHistoryPagination = document.getElementById('giveaways-history-pagination');
+        
+        // Элементы для синхронизации
+        const exportDataBtn = document.getElementById('export-data');
+        const importDataBtn = document.getElementById('import-data');
+        const importFileInput = document.getElementById('import-file');
+        const syncMessage = document.getElementById('sync-message');
+        
+        const adminExportDataBtn = document.getElementById('admin-export-data');
+        const adminImportDataBtn = document.getElementById('admin-import-data');
+        const adminImportFileInput = document.getElementById('admin-import-file');
+        const dataTextarea = document.getElementById('data-textarea');
+        const copyDataBtn = document.getElementById('copy-data');
+        const pasteDataBtn = document.getElementById('paste-data');
+        const adminSyncMessage = document.getElementById('admin-sync-message');
         
         const adminBtn = document.getElementById('admin-btn');
         const adminPanel = document.getElementById('admin-panel');
@@ -848,6 +929,75 @@
         // Функции
         function generateId() {
             return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+        
+        // Функции для работы с данными
+        function saveData() {
+            localStorage.setItem('giveaways', JSON.stringify(giveaways));
+            localStorage.setItem('participants', JSON.stringify(participants));
+            localStorage.setItem('winners', JSON.stringify(winners));
+        }
+        
+        function exportAllData() {
+            const data = {
+                giveaways: giveaways,
+                participants: participants,
+                winners: winners,
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `розыгрыши_резервная_копия_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            return dataStr;
+        }
+        
+        function importData(dataStr) {
+            try {
+                const data = JSON.parse(dataStr);
+                
+                if (data.giveaways && data.participants && data.winners) {
+                    // Подтверждение перезаписи данных
+                    if (confirm('Вы уверены, что хотите импортировать данные? Текущие данные будут заменены.')) {
+                        giveaways = data.giveaways;
+                        participants = data.participants;
+                        winners = data.winners;
+                        
+                        saveData();
+                        updateAllViews();
+                        
+                        return true;
+                    }
+                } else {
+                    alert('Некорректный формат данных. Убедитесь, что файл содержит информацию о розыгрышах, участниках и победителях.');
+                    return false;
+                }
+            } catch (e) {
+                alert('Ошибка при импорте данных: ' + e.message);
+                return false;
+            }
+        }
+        
+        function updateAllViews() {
+            updateGiveawaySelectors();
+            updateCurrentGiveawayInfo();
+            renderActiveGiveawaysMain();
+            renderGiveawaysHistory();
+            
+            if (isAdminLoggedIn) {
+                renderActiveGiveaways();
+                renderParticipantsTable();
+                renderWinnersManagement();
+            }
         }
         
         function updateGiveawaySelectors() {
@@ -1578,12 +1728,6 @@
             }
         }
         
-        function saveData() {
-            localStorage.setItem('giveaways', JSON.stringify(giveaways));
-            localStorage.setItem('participants', JSON.stringify(participants));
-            localStorage.setItem('winners', JSON.stringify(winners));
-        }
-        
         function registerParticipant() {
             const giveawayId = currentGiveawaySelect.value;
             if (!giveawayId) {
@@ -1844,6 +1988,79 @@
             drawAllWinnersBtn.addEventListener('click', drawAllWinners);
             confirmWinnerBtn.addEventListener('click', confirmWinner);
             confirmRedrawBtn.addEventListener('click', redrawWinner);
+            
+            // Обработчики синхронизации
+            exportDataBtn.addEventListener('click', function() {
+                const dataStr = exportAllData();
+                showMessage(syncMessage, 'Данные успешно экспортированы в файл', 'success');
+            });
+            
+            importDataBtn.addEventListener('click', function() {
+                importFileInput.click();
+            });
+            
+            importFileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const dataStr = e.target.result;
+                        if (importData(dataStr)) {
+                            showMessage(syncMessage, 'Данные успешно импортированы', 'success');
+                        } else {
+                            showMessage(syncMessage, 'Ошибка при импорте данных', 'error');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+                // Сбрасываем значение input, чтобы можно было выбрать тот же файл снова
+                importFileInput.value = '';
+            });
+            
+            // Обработчики синхронизации в админке
+            adminExportDataBtn.addEventListener('click', function() {
+                const dataStr = exportAllData();
+                dataTextarea.value = dataStr;
+                showMessage(adminSyncMessage, 'Данные успешно экспортированы', 'success');
+            });
+            
+            adminImportDataBtn.addEventListener('click', function() {
+                adminImportFileInput.click();
+            });
+            
+            adminImportFileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const dataStr = e.target.result;
+                        dataTextarea.value = dataStr;
+                        if (importData(dataStr)) {
+                            showMessage(adminSyncMessage, 'Данные успешно импортированы', 'success');
+                        } else {
+                            showMessage(adminSyncMessage, 'Ошибка при импорте данных', 'error');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+                // Сбрасываем значение input, чтобы можно было выбрать тот же файл снова
+                adminImportFileInput.value = '';
+            });
+            
+            copyDataBtn.addEventListener('click', function() {
+                dataTextarea.select();
+                document.execCommand('copy');
+                showMessage(adminSyncMessage, 'Данные скопированы в буфер обмена', 'success');
+            });
+            
+            pasteDataBtn.addEventListener('click', function() {
+                navigator.clipboard.readText().then(text => {
+                    dataTextarea.value = text;
+                    showMessage(adminSyncMessage, 'Данные вставлены из буфера обмена', 'success');
+                }).catch(err => {
+                    showMessage(adminSyncMessage, 'Ошибка при чтении из буфера обмена', 'error');
+                });
+            });
             
             // Обработчики вкладок
             tabButtons.forEach(button => {
