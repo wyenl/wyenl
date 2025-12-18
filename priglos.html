@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Розыгрыш призов</title>
+    <title>Приглашение на прогулку для Нюши</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -12,2084 +13,593 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
-        :root {
-            --primary: #6a11cb;
-            --secondary: #2575fc;
-            --accent: #ff4081;
-            --light: rgba(255, 255, 255, 0.9);
-            --dark: #333;
-            --success: #4CAF50;
-            --warning: #FFC107;
-            --danger: #F44336;
-            --info: #2196F3;
-        }
-        
         body {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: #fff;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
             min-height: 100vh;
             padding: 20px;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
+            padding: 20px;
         }
         
         header {
             text-align: center;
-            padding: 30px 0;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: cover;
         }
         
         h1 {
-            font-size: 3rem;
+            font-size: 2.8rem;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
         }
         
         .subtitle {
             font-size: 1.2rem;
             opacity: 0.9;
+            position: relative;
         }
         
-        .main-content {
-            display: flex;
-            flex-wrap: wrap;
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 30px;
-            margin-top: 30px;
+            margin-bottom: 40px;
         }
         
-        .card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            flex: 1;
-            min-width: 300px;
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
         }
         
-        .card h2 {
+        .invitation-card, .form-section, .admin-panel {
+            background-color: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .invitation-card:hover, .form-section:hover {
+            transform: translateY(-5px);
+        }
+        
+        .invitation-card {
+            background: linear-gradient(to bottom right, #fdfcfb 0%, #f5f1e7 100%);
+        }
+        
+        .invitation-card h2, .form-section h2, .admin-panel h2 {
+            color: #2575fc;
             margin-bottom: 20px;
-            font-size: 1.8rem;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .personal-info {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .person {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            border-radius: 15px;
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .person h3 {
+            color: #6a11cb;
+            margin-bottom: 5px;
+        }
+        
+        .person p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .message {
+            background-color: rgba(106, 17, 203, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 5px solid #6a11cb;
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+        
+        .message p {
+            margin-bottom: 15px;
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         
         label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 500;
+            font-weight: 600;
+            color: #555;
         }
         
         input, select, textarea {
             width: 100%;
-            padding: 12px 15px;
-            border: none;
-            border-radius: 8px;
-            background: var(--light);
+            padding: 15px;
+            border: 2px solid #e1e5ee;
+            border-radius: 10px;
             font-size: 1rem;
+            transition: border 0.3s;
         }
         
-        button {
-            background: var(--accent);
+        input:focus, select:focus, textarea:focus {
+            border-color: #6a11cb;
+            outline: none;
+        }
+        
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 480px) {
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .checkbox-option input {
+            width: auto;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
             color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
+            padding: 18px;
+            font-size: 1.2rem;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 1rem;
+            width: 100%;
             font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 64, 129, 0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-top: 10px;
         }
         
-        button:hover {
-            background: #f50057;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 64, 129, 0.6);
-        }
-        
-        .participants-list {
-            max-height: 300px;
-            overflow-y: auto;
-            margin-top: 20px;
-        }
-        
-        .participant-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .winner-display {
-            text-align: center;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 15px;
-            margin-top: 20px;
-            min-height: 200px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .winner-name {
-            font-size: 2.5rem;
-            margin: 20px 0;
-            color: #ffeb3b;
-            text-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
-        }
-        
-        .prize-name {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-        
-        .history-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-        
-        .history-date {
-            font-size: 0.9rem;
-            opacity: 0.7;
-            margin-bottom: 5px;
-        }
-        
-        .delete-btn {
-            background: rgba(255, 0, 0, 0.7);
-            padding: 5px 10px;
-            font-size: 0.8rem;
-        }
-        
-        .delete-btn:hover {
-            background: rgba(255, 0, 0, 0.9);
-        }
-        
-        .admin-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--warning);
-            color: var(--dark);
-        }
-        
-        .admin-btn:hover {
-            background: #ffb300;
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(106, 17, 203, 0.3);
         }
         
         .admin-panel {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            overflow-y: auto;
-            padding: 20px;
+            background-color: #f8f9fa;
+            border: 2px dashed #6a11cb;
+            margin-top: 40px;
         }
         
-        .admin-content {
-            background: white;
-            color: var(--dark);
-            max-width: 1000px;
-            margin: 40px auto;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-        
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #eee;
-        }
-        
-        .admin-section {
-            margin-bottom: 30px;
-        }
-        
-        .admin-section h3 {
-            margin-bottom: 15px;
-            color: var(--primary);
-        }
-        
-        .participants-table {
+        .responses-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            margin-top: 20px;
         }
         
-        .participants-table th, .participants-table td {
+        .responses-table th, .responses-table td {
             padding: 12px 15px;
             text-align: left;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #ddd;
         }
         
-        .participants-table th {
-            background: var(--primary);
-            color: white;
+        .responses-table th {
+            background-color: #f1f3f5;
+            color: #495057;
         }
         
-        .participants-table tr:hover {
-            background: #f5f5f5;
+        .no-responses {
+            text-align: center;
+            padding: 30px;
+            color: #6c757d;
+            font-style: italic;
         }
         
-        .close-admin {
-            background: var(--danger);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
+        .admin-info {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 10px;
         }
         
-        .tab-buttons {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #eee;
-            flex-wrap: wrap;
+        .charm-element {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(to right, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            animation: pulse 2s infinite;
         }
         
-        .tab-button {
-            padding: 10px 20px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--dark);
-            font-weight: 500;
-            border-bottom: 3px solid transparent;
-            white-space: nowrap;
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
         }
         
-        .tab-button.active {
-            border-bottom: 3px solid var(--primary);
-            color: var(--primary);
+        .charm-element i {
+            font-size: 2.5rem;
+            color: #ff6b6b;
+            margin-bottom: 10px;
         }
         
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #ffeb3b;
-            animation: spin 1s ease-in-out infinite;
-            margin: 20px auto;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+            font-size: 0.9rem;
         }
         
         .hidden {
             display: none;
         }
         
-        .message {
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .success {
-            background: rgba(76, 175, 80, 0.2);
-            border: 1px solid var(--success);
-            color: var(--success);
-        }
-        
-        .error {
-            background: rgba(244, 67, 54, 0.2);
-            border: 1px solid var(--danger);
-            color: var(--danger);
-        }
-        
-        .giveaway-selector {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .giveaway-card {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .giveaway-card.active {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid var(--accent);
-        }
-        
-        .giveaway-card.completed {
-            background: rgba(76, 175, 80, 0.2);
-            border: 2px solid var(--success);
-        }
-        
-        .winners-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .winner-card {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .winner-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-        
-        .winner-card.selected {
-            background: rgba(255, 235, 59, 0.2);
-            border: 2px solid #ffeb3b;
-        }
-        
-        .winner-card.confirmed {
-            background: rgba(76, 175, 80, 0.2);
-            border: 2px solid var(--success);
-        }
-        
-        .profile-link {
-            color: #ffeb3b;
-            text-decoration: none;
-            margin: 0 5px;
-            transition: all 0.3s ease;
-        }
-        
-        .profile-link:hover {
-            text-decoration: underline;
-            color: #fff;
-        }
-        
-        .random-btn {
-            background: var(--primary);
-        }
-        
-        .redraw-btn {
-            background: var(--warning);
-            color: var(--dark);
-        }
-        
-        .confirm-btn {
-            background: var(--success);
-        }
-        
-        .complete-btn {
-            background: var(--info);
-        }
-        
-        .winner-history {
-            margin-top: 10px;
-            font-size: 0.9rem;
-        }
-        
-        .first-time-winner {
-            color: var(--success);
-        }
-        
-        .repeat-winner {
-            color: var(--warning);
-        }
-        
-        .last-win-date {
-            font-size: 0.8rem;
-            opacity: 0.8;
-            margin-top: 5px;
-        }
-        
-        .win-history-list {
-            margin-top: 10px;
-            font-size: 0.8rem;
-            text-align: left;
-            max-height: 100px;
-            overflow-y: auto;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 8px;
-            border-radius: 5px;
-        }
-        
-        .win-history-item {
-            padding: 3px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .win-history-item:last-child {
-            border-bottom: none;
-        }
-        
-        .selected-winner-info {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 15px;
-            text-align: center;
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-left: 10px;
-        }
-        
-        .status-active {
-            background: var(--success);
-            color: white;
-        }
-        
-        .status-completed {
-            background: var(--info);
-            color: white;
-        }
-        
-        .all-giveaways-list {
-            margin-top: 20px;
-        }
-        
-        .giveaway-history-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .giveaway-history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        .giveaway-history-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-        
-        .giveaway-history-date {
-            font-size: 0.9rem;
-            opacity: 0.7;
-        }
-        
-        .giveaway-history-prize {
-            margin-bottom: 10px;
-            font-style: italic;
-        }
-        
-        /* Новые стили для пагинации истории розыгрышей */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-            gap: 10px;
-        }
-        
-        .pagination button {
-            padding: 8px 12px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        
-        .pagination button.active {
-            background: var(--accent);
-        }
-        
-        .pagination button:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.3);
-        }
-        
-        .pagination button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .history-page {
-            display: none;
-        }
-        
-        .history-page.active {
-            display: block;
-        }
-        
-        .history-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-        }
-        
-        /* Уменьшаем ширину вкладок */
-        .compact-tabs .tab-button {
-            padding: 8px 12px;
-            font-size: 0.9rem;
-        }
-        
-        /* Стили для синхронизации */
-        .sync-section {
-            background: rgba(255, 255, 255, 0.1);
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
             padding: 20px;
             border-radius: 10px;
+            text-align: center;
             margin-top: 20px;
-        }
-        
-        .sync-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 15px;
-        }
-        
-        .sync-btn {
-            background: var(--info);
-        }
-        
-        .backup-btn {
-            background: var(--success);
-        }
-        
-        .restore-btn {
-            background: var(--warning);
-            color: var(--dark);
-        }
-        
-        @media (max-width: 768px) {
-            .main-content {
-                flex-direction: column;
-            }
-            
-            h1 {
-                font-size: 2.2rem;
-            }
-            
-            .admin-content {
-                margin: 20px auto;
-                padding: 20px;
-            }
-            
-            .winners-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            .giveaway-history-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .history-controls {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .pagination {
-                flex-wrap: wrap;
-            }
-            
-            .sync-buttons {
-                flex-direction: column;
-            }
+            display: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Розыгрыш призов</h1>
-            <p class="subtitle">Зарегистрируйтесь для участия в розыгрыше!</p>
+            <h1><i class="fas fa-heart"></i> Приглашение на прогулку</h1>
+            <p class="subtitle">Специально для Нюши Бруно Гарсия от Евгения Ивашина</p>
         </header>
         
-        <div class="main-content">
-            <div class="card">
-                <h2>Регистрация на розыгрыш</h2>
-                <div id="registration-message"></div>
+        <div class="charm-element">
+            <i class="fas fa-magic"></i>
+            <h3>Нюша, эта прогулка будет волшебной!</h3>
+            <p>Я подготовил специальный сайт для тебя, чтобы ты оценила мои старания и желание с тобой погулять!</p>
+        </div>
+        
+        <div class="content">
+            <div class="invitation-card">
+                <h2><i class="fas fa-envelope-open-text"></i> Персональное приглашение</h2>
                 
-                <div class="form-group">
-                    <label for="current-giveaway-select">Выберите розыгрыш</label>
-                    <select id="current-giveaway-select">
-                        <option value="">-- Выберите розыгрыш --</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="participant-twitch">Ник на Twitch</label>
-                    <input type="text" id="participant-twitch" placeholder="Введите ваш ник на Twitch">
-                </div>
-                <div class="form-group">
-                    <label for="participant-telegram">Ник в Telegram</label>
-                    <input type="text" id="participant-telegram" placeholder="Введите ваш ник в Telegram">
-                </div>
-                <div class="form-group">
-                    <label for="participant-code">Кодовое слово</label>
-                    <input type="text" id="participant-code" placeholder="Введите кодовое слово">
-                </div>
-                
-                <button id="register-participant">Зарегистрироваться</button>
-                
-                <h2 style="margin-top: 30px;">Текущий розыгрыш</h2>
-                <div id="current-giveaway-info">
-                    <p>Выберите розыгрыш для просмотра информации</p>
-                </div>
-                
-                <div class="sync-section">
-                    <h3>Синхронизация данных</h3>
-                    <p>Сохраните данные для переноса на другое устройство</p>
-                    <div class="sync-buttons">
-                        <button id="export-data" class="backup-btn">Экспорт данных</button>
-                        <button id="import-data" class="restore-btn">Импорт данных</button>
-                        <input type="file" id="import-file" accept=".json" style="display: none;">
+                <div class="personal-info">
+                    <div class="person">
+                        <h3>Нюша</h3>
+                        <p>Бруно Гарсия</p>
+                        <p><i class="fas fa-map-marker-alt"></i> Переехала из Москвы в Пензу</p>
+                        <p>Живёт на Окружной</p>
                     </div>
-                    <div id="sync-message"></div>
+                    
+                    <div class="person">
+                        <h3>Евгений</h3>
+                        <p>Ивашин</p>
+                        <p><i class="fas fa-home"></i> Всю жизнь в Пензе</p>
+                        <p>Знаю все лучшие места</p>
+                    </div>
+                </div>
+                
+                <div class="message">
+                    <p>Дорогая Нюша!</p>
+                    <p>Я знаю, что ты часто занята или отдыхаешь, но я очень надеюсь, что ты сможешь найти немного времени для прогулки со мной.</p>
+                    <p>Я подготовил несколько вариантов, где мы можем погулять и чем заняться. Уверен, нам будет очень весело!</p>
+                    <p>Пенза может быть очень красивой, особенно в хорошей компании.</p>
+                    <p>С нетерпением жду твоего ответа!</p>
+                    <p style="text-align: right;">С теплом,<br>От Жени</p>
                 </div>
             </div>
             
-            <div class="card">
-                <h2>Активные розыгрыши</h2>
-                <div id="active-giveaways-main">
-                    <!-- Активные розыгрыши будут здесь -->
-                </div>
+            <div class="form-section">
+                <h2><i class="fas fa-calendar-check"></i> Запланируем прогулку?</h2>
+                <p>Выбери удобное время, место и занятия:</p>
                 
-                <h2 style="margin-top: 30px;">История розыгрышей</h2>
-                <div id="giveaways-history-container">
-                    <div id="giveaways-history-pages">
-                        <!-- Страницы истории будут здесь -->
+                <form id="invitationForm">
+                    <div class="form-group">
+                        <label for="date"><i class="far fa-calendar"></i> Дата прогулки:</label>
+                        <input type="date" id="date" name="date" required>
                     </div>
-                    <div class="pagination" id="giveaways-history-pagination">
-                        <!-- Пагинация будет здесь -->
+                    
+                    <div class="form-group">
+                        <label for="time"><i class="far fa-clock"></i> Время:</label>
+                        <input type="time" id="time" name="time" required>
                     </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-map-marked-alt"></i> Где погуляем?</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-option">
+                                <input type="checkbox" id="park" name="location" value="Парк Белинского">
+                                <label for="park">Парк Белинского</label>
+                            </div>
+                            <div class="checkbox-option">
+                                <input type="checkbox" id="center" name="location" value="Центр города">
+                                <label for="center">Центр города</label>
+                            </div>
+                            <div class="checkbox-option">
+                                <input type="checkbox" id="okruzhnaya" name="location" value="Окружная">
+                                <label for="okruzhnaya">Окружная (твоя)</label>
+                            </div>
+                            <div class="checkbox-option">
+                                <input type="checkbox" id="south" name="location" value="Южная">
+                                <label for="south">Южная</label>
+                            </div>
+                            <div class="checkbox-option">
+                                <input type="checkbox" id="zoo" name="location" value="Зоопарк">
+                                <label for="zoo">Зоопарк</label>
+                            </div>
+                            <div class="checkbox-option">
+                                <input type="checkbox" id="other" name="location" value="Другое место">
+                                <label for="other">Другое место</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-heart"></i> Что хочешь сделать на прогулке?</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-option">
+                                <input type="checkbox" id="coffee" name="activity" value="Выпить кофе">
+                                <label for="coffee">Выпить кофе</label>
+                            </div>
+                            <div class="checkbox-option">
+                                <input type="checkbox" id="photo" name="activity" value="Фотографироваться">
+                                <label for="photo">Фотографироваться</label>
+                            </div>
+                            <div class="checkbox-option">
+                                <input type="checkbox" id="walk" name="activity" value="Просто гулять">
+                                <label for="walk">Просто гулять</label>
+                            </div>
+                            <div class="checkbox-option">
+                                <input type="checkbox" id="talk" name="activity" value="Общаться">
+                                <label for="talk">Общаться</label>
+                            </div>
+                            <div class="checkbox-option">
+                                <input type="checkbox" id="eat" name="activity" value="Перекусить">
+                                <label for="eat">Перекусить</label>
+                            </div>
+                            <div class="checkbox-option">
+                                <input type="checkbox" id="surprise" name="activity" value="Сюрприз от Жени">
+                                <label for="surprise">Сюрприз от Жени</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message"><i class="far fa-comment-dots"></i> Дополнительные пожелания:</label>
+                        <textarea id="message" name="message" rows="3" placeholder="Можешь написать свои идеи или пожелания..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-paper-plane"></i> Отправить приглашение
+                    </button>
+                </form>
+                
+                <div id="successMessage" class="success-message">
+                    <h3><i class="fas fa-check-circle"></i> Приглашение отправлено!</h3>
+                    <p>Женя получит твой ответ и обязательно свяжется с тобой. Ждём тебя на прогулке!</p>
                 </div>
             </div>
         </div>
         
-        <button class="admin-btn" id="admin-btn">Админка</button>
-        
-        <div class="admin-panel" id="admin-panel">
-            <div class="admin-content">
-                <div class="admin-header">
-                    <h2>Панель администратора</h2>
-                    <button class="close-admin" id="close-admin">Закрыть</button>
-                </div>
-                
-                <div class="tab-buttons compact-tabs">
-                    <button class="tab-button active" data-tab="login">Вход</button>
-                    <button class="tab-button" data-tab="giveaways">Розыгрыши</button>
-                    <button class="tab-button" data-tab="participants">Участники</button>
-                    <button class="tab-button" data-tab="winners">Победители</button>
-                    <button class="tab-button" data-tab="sync">Синхронизация</button>
-                </div>
-                
-                <div id="login-tab" class="tab-content active">
-                    <div class="form-group">
-                        <label for="admin-login">Логин</label>
-                        <input type="text" id="admin-login" placeholder="Введите логин">
-                    </div>
-                    <div class="form-group">
-                        <label for="admin-password">Пароль</label>
-                        <input type="password" id="admin-password" placeholder="Введите пароль">
-                    </div>
-                    <button id="admin-login-btn">Войти</button>
-                    <div id="admin-login-message"></div>
-                </div>
-                
-                <div id="giveaways-tab" class="tab-content">
-                    <h3>Управление розыгрышами</h3>
-                    
-                    <div class="form-group">
-                        <label for="giveaway-title">Название розыгрыша</label>
-                        <input type="text" id="giveaway-title" placeholder="Введите название розыгрыша">
-                    </div>
-                    <div class="form-group">
-                        <label for="giveaway-prize">Приз</label>
-                        <input type="text" id="giveaway-prize" placeholder="Введите описание приза">
-                    </div>
-                    <div class="form-group">
-                        <label for="giveaway-code-word">Кодовое слово</label>
-                        <input type="text" id="giveaway-code-word" placeholder="Введите кодовое слово">
-                    </div>
-                    <div class="form-group">
-                        <label for="winners-count">Количество победителей</label>
-                        <input type="number" id="winners-count" value="1" min="1">
-                    </div>
-                    <button id="create-giveaway">Создать розыгрыш</button>
-                    <button id="update-giveaway" style="margin-left: 10px;">Обновить розыгрыш</button>
-                    <div id="giveaway-message"></div>
-                    
-                    <h3 style="margin-top: 30px;">Активные розыгрыши</h3>
-                    <div id="active-giveaways-list">
-                        <!-- Список активных розыгрышей -->
-                    </div>
-                </div>
-                
-                <div id="participants-tab" class="tab-content">
-                    <h3>Участники розыгрышей</h3>
-                    
-                    <div class="form-group">
-                        <label for="giveaway-filter">Фильтр по розыгрышу</label>
-                        <select id="giveaway-filter">
-                            <option value="all">Все розыгрыши</option>
-                        </select>
-                    </div>
-                    
-                    <table class="participants-table">
-                        <thead>
-                            <tr>
-                                <th>Twitch</th>
-                                <th>Telegram</th>
-                                <th>Розыгрыш</th>
-                                <th>Дата регистрации</th>
-                                <th>Действия</th>
-                            </tr>
-                        </thead>
-                        <tbody id="participants-table-body">
-                            <!-- Участники будут здесь -->
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div id="winners-tab" class="tab-content">
-                    <h3>Управление победителями</h3>
-                    
-                    <div class="form-group">
-                        <label for="giveaway-for-winner">Выберите розыгрыш</label>
-                        <select id="giveaway-for-winner">
-                            <option value="">-- Выберите розыгрыш --</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <button id="draw-random" class="random-btn">Выбрать случайного победителя</button>
-                        <button id="draw-all-winners" style="margin-left: 10px;">Выбрать всех победителей</button>
-                    </div>
-                    
-                    <div id="winner-message"></div>
-                    
-                    <h3 style="margin-top: 30px;">Победители</h3>
-                    <div id="selected-winner-info" class="selected-winner-info" style="display: none;">
-                        <p>Выбран победитель: <strong id="selected-winner-name"></strong></p>
-                        <div class="action-buttons">
-                            <button id="confirm-winner" class="confirm-btn">Подтвердить победителя и завершить розыгрыш</button>
-                            <button id="confirm-redraw" class="redraw-btn">Переизбрать победителя</button>
-                        </div>
-                    </div>
-                    
-                    <div id="winners-management-list">
-                        <!-- Победители будут здесь -->
-                    </div>
-                </div>
-                
-                <div id="sync-tab" class="tab-content">
-                    <h3>Синхронизация данных</h3>
-                    <p>Экспортируйте данные для переноса на другое устройство или импортируйте данные с другого устройства.</p>
-                    
-                    <div class="sync-buttons">
-                        <button id="admin-export-data" class="backup-btn">Экспорт всех данных</button>
-                        <button id="admin-import-data" class="restore-btn">Импорт данных</button>
-                        <input type="file" id="admin-import-file" accept=".json" style="display: none;">
-                    </div>
-                    
-                    <div class="form-group" style="margin-top: 20px;">
-                        <label for="data-textarea">Данные для импорта/экспорта</label>
-                        <textarea id="data-textarea" rows="10" placeholder="Вставьте сюда данные для импорта или скопируйте отсюда данные для экспорта"></textarea>
-                    </div>
-                    
-                    <div class="action-buttons">
-                        <button id="copy-data" class="sync-btn">Копировать данные</button>
-                        <button id="paste-data" class="sync-btn">Вставить данные</button>
-                    </div>
-                    
-                    <div id="admin-sync-message"></div>
+        <div class="admin-panel" id="adminPanel">
+            <h2><i class="fas fa-user-shield"></i> Админ-панель для Евгения</h2>
+            <p>Здесь будут отображаться ответы от Тебя</p>
+            <p class="admin-info">Пароль для просмотра: <strong>Обманул, тут нет пароля</strong> (введите в поле ниже)</p>
+            
+            <div class="form-group">
+                <label for="adminPassword">Введите пароль:</label>
+                <input type="password" id="adminPassword" placeholder="Введите пароль для доступа">
+                <button id="showAdminBtn" class="submit-btn" style="margin-top: 10px; padding: 12px;">
+                    <i class="fas fa-lock"></i> Показать ответы
+                </button>
+            </div>
+            
+            <div id="responsesContainer" class="hidden">
+                <h3>Ответы от Нюши:</h3>
+                <table class="responses-table">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Время</th>
+                            <th>Места</th>
+                            <th>Занятия</th>
+                            <th>Пожелания</th>
+                        </tr>
+                    </thead>
+                    <tbody id="responsesTable">
+                        <!-- Ответы будут загружены здесь -->
+                    </tbody>
+                </table>
+                <div id="noResponses" class="no-responses">
+                    <p>Пока ответов нет. Как только Нюша заполнит форму, они появятся здесь.</p>
                 </div>
             </div>
+        </div>
+        
+        <div class="footer">
+            <p>Создано с ❤️ специально для Нюши Бруно Гарсия</p>
+            <p>© 2025 Евгений Ивашин, Пенза</p>
         </div>
     </div>
 
     <script>
-        // Данные приложения
-        let giveaways = JSON.parse(localStorage.getItem('giveaways')) || [];
-        let participants = JSON.parse(localStorage.getItem('participants')) || [];
-        let winners = JSON.parse(localStorage.getItem('winners')) || [];
-        let isAdminLoggedIn = false;
-        let currentGiveawayId = null;
-        let selectedWinnerId = null;
-        
-        // Переменные для пагинации истории розыгрышей
-        let currentHistoryPage = 1;
-        const historyItemsPerPage = 3; // Количество розыгрышей на странице
-        
-        // Элементы DOM
-        const currentGiveawaySelect = document.getElementById('current-giveaway-select');
-        const participantTwitchInput = document.getElementById('participant-twitch');
-        const participantTelegramInput = document.getElementById('participant-telegram');
-        const participantCodeInput = document.getElementById('participant-code');
-        const registerParticipantBtn = document.getElementById('register-participant');
-        const registrationMessage = document.getElementById('registration-message');
-        const currentGiveawayInfo = document.getElementById('current-giveaway-info');
-        const activeGiveawaysMain = document.getElementById('active-giveaways-main');
-        const giveawaysHistoryPages = document.getElementById('giveaways-history-pages');
-        const giveawaysHistoryPagination = document.getElementById('giveaways-history-pagination');
-        
-        // Элементы для синхронизации
-        const exportDataBtn = document.getElementById('export-data');
-        const importDataBtn = document.getElementById('import-data');
-        const importFileInput = document.getElementById('import-file');
-        const syncMessage = document.getElementById('sync-message');
-        
-        const adminExportDataBtn = document.getElementById('admin-export-data');
-        const adminImportDataBtn = document.getElementById('admin-import-data');
-        const adminImportFileInput = document.getElementById('admin-import-file');
-        const dataTextarea = document.getElementById('data-textarea');
-        const copyDataBtn = document.getElementById('copy-data');
-        const pasteDataBtn = document.getElementById('paste-data');
-        const adminSyncMessage = document.getElementById('admin-sync-message');
-        
-        const adminBtn = document.getElementById('admin-btn');
-        const adminPanel = document.getElementById('admin-panel');
-        const closeAdminBtn = document.getElementById('close-admin');
-        
-        const adminLoginInput = document.getElementById('admin-login');
-        const adminPasswordInput = document.getElementById('admin-password');
-        const adminLoginBtn = document.getElementById('admin-login-btn');
-        const adminLoginMessage = document.getElementById('admin-login-message');
-        
-        const giveawayTitleInput = document.getElementById('giveaway-title');
-        const giveawayPrizeInput = document.getElementById('giveaway-prize');
-        const giveawayCodeWordInput = document.getElementById('giveaway-code-word');
-        const winnersCountInput = document.getElementById('winners-count');
-        const createGiveawayBtn = document.getElementById('create-giveaway');
-        const updateGiveawayBtn = document.getElementById('update-giveaway');
-        const giveawayMessage = document.getElementById('giveaway-message');
-        const activeGiveawaysList = document.getElementById('active-giveaways-list');
-        
-        const giveawayFilter = document.getElementById('giveaway-filter');
-        const participantsTableBody = document.getElementById('participants-table-body');
-        
-        const giveawayForWinner = document.getElementById('giveaway-for-winner');
-        const drawRandomBtn = document.getElementById('draw-random');
-        const drawAllWinnersBtn = document.getElementById('draw-all-winners');
-        const winnerMessage = document.getElementById('winner-message');
-        const winnersManagementList = document.getElementById('winners-management-list');
-        
-        // Элементы для управления победителями
-        const selectedWinnerInfo = document.getElementById('selected-winner-info');
-        const selectedWinnerName = document.getElementById('selected-winner-name');
-        const confirmWinnerBtn = document.getElementById('confirm-winner');
-        const confirmRedrawBtn = document.getElementById('confirm-redraw');
-        
-        const tabButtons = document.querySelectorAll('.tab-button');
-        const tabContents = document.querySelectorAll('.tab-content');
-        
-        // Функции
-        function generateId() {
-            return Date.now().toString(36) + Math.random().toString(36).substr(2);
-        }
-        
-        // Функции для работы с данными
-        function saveData() {
-            localStorage.setItem('giveaways', JSON.stringify(giveaways));
-            localStorage.setItem('participants', JSON.stringify(participants));
-            localStorage.setItem('winners', JSON.stringify(winners));
-        }
-        
-        function exportAllData() {
-            const data = {
-                giveaways: giveaways,
-                participants: participants,
-                winners: winners,
-                exportDate: new Date().toISOString()
-            };
+        document.addEventListener('DOMContentLoaded', function() {
+            // Устанавливаем минимальную дату - сегодня
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').min = today;
             
-            const dataStr = JSON.stringify(data, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            // Устанавливаем дату по умолчанию - через 3 дня
+            const defaultDate = new Date();
+            defaultDate.setDate(defaultDate.getDate() + 3);
+            const defaultDateString = defaultDate.toISOString().split('T')[0];
+            document.getElementById('date').value = defaultDateString;
             
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `розыгрыши_резервная_копия_${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+            // Устанавливаем время по умолчанию - 18:00
+            document.getElementById('time').value = "18:00";
             
-            return dataStr;
-        }
-        
-        function importData(dataStr) {
-            try {
-                const data = JSON.parse(dataStr);
+            // Обработка отправки формы
+            document.getElementById('invitationForm').addEventListener('submit', function(e) {
+                e.preventDefault();
                 
-                if (data.giveaways && data.participants && data.winners) {
-                    // Подтверждение перезаписи данных
-                    if (confirm('Вы уверены, что хотите импортировать данные? Текущие данные будут заменены.')) {
-                        giveaways = data.giveaways;
-                        participants = data.participants;
-                        winners = data.winners;
-                        
-                        saveData();
-                        updateAllViews();
-                        
-                        return true;
-                    }
-                } else {
-                    alert('Некорректный формат данных. Убедитесь, что файл содержит информацию о розыгрышах, участниках и победителях.');
-                    return false;
-                }
-            } catch (e) {
-                alert('Ошибка при импорте данных: ' + e.message);
-                return false;
-            }
-        }
-        
-        function updateAllViews() {
-            updateGiveawaySelectors();
-            updateCurrentGiveawayInfo();
-            renderActiveGiveawaysMain();
-            renderGiveawaysHistory();
-            
-            if (isAdminLoggedIn) {
-                renderActiveGiveaways();
-                renderParticipantsTable();
-                renderWinnersManagement();
-            }
-        }
-        
-        function updateGiveawaySelectors() {
-            // Обновляем селектор для участников (только активные розыгрыши)
-            currentGiveawaySelect.innerHTML = '<option value="">-- Выберите розыгрыш --</option>';
-            giveawayFilter.innerHTML = '<option value="all">Все розыгрыши</option>';
-            giveawayForWinner.innerHTML = '<option value="">-- Выберите розыгрыш --</option>';
-            
-            giveaways.forEach(giveaway => {
-                // Для регистрации показываем только активные незавершенные розыгрыши
-                if (giveaway.isActive && !giveaway.isCompleted) {
-                    currentGiveawaySelect.innerHTML += `<option value="${giveaway.id}">${giveaway.title}</option>`;
-                }
-                
-                giveawayFilter.innerHTML += `<option value="${giveaway.id}">${giveaway.title}</option>`;
-                giveawayForWinner.innerHTML += `<option value="${giveaway.id}">${giveaway.title}</option>`;
-            });
-        }
-        
-        function updateCurrentGiveawayInfo() {
-            if (!currentGiveawayId) {
-                currentGiveawayInfo.innerHTML = '<p>Выберите розыгрыш для просмотра информации</p>';
-                return;
-            }
-            
-            const giveaway = giveaways.find(g => g.id === currentGiveawayId);
-            if (!giveaway) {
-                currentGiveawayInfo.innerHTML = '<p>Розыгрыш не найден</p>';
-                return;
-            }
-            
-            const statusBadge = giveaway.isCompleted ? 
-                '<span class="status-badge status-completed">Завершен</span>' : 
-                '<span class="status-badge status-active">Активен</span>';
-            
-            currentGiveawayInfo.innerHTML = `
-                <p><strong>Название:</strong> ${giveaway.title} ${statusBadge}</p>
-                <p><strong>Приз:</strong> ${giveaway.prize}</p>
-                <p><strong>Кодовое слово:</strong> ${giveaway.codeWord}</p>
-                <p><strong>Количество победителей:</strong> ${giveaway.winnersCount}</p>
-                <p><strong>Участников:</strong> ${participants.filter(p => p.giveawayId === currentGiveawayId).length}</p>
-                <p><strong>Выбрано победителей:</strong> ${winners.filter(w => w.giveawayId === currentGiveawayId).length}</p>
-            `;
-        }
-        
-        function renderActiveGiveawaysMain() {
-            activeGiveawaysMain.innerHTML = '';
-            
-            const activeGiveaways = giveaways.filter(g => g.isActive && !g.isCompleted);
-            
-            if (activeGiveaways.length === 0) {
-                activeGiveawaysMain.innerHTML = '<p>Нет активных розыгрышей в данный момент</p>';
-                return;
-            }
-            
-            activeGiveaways.forEach(giveaway => {
-                const giveawayElement = document.createElement('div');
-                giveawayElement.className = 'giveaway-card active';
-                
-                const winnerCount = winners.filter(w => w.giveawayId === giveaway.id).length;
-                const participantCount = participants.filter(p => p.giveawayId === giveaway.id).length;
-                
-                giveawayElement.innerHTML = `
-                    <h3>${giveaway.title}</h3>
-                    <p><strong>Приз:</strong> ${giveaway.prize}</p>
-                    <p><strong>Кодовое слово:</strong> ${giveaway.codeWord}</p>
-                    <p><strong>Количество победителей:</strong> ${giveaway.winnersCount}</p>
-                    <p><strong>Участников:</strong> ${participantCount}</p>
-                    <p><strong>Выбрано победителей:</strong> ${winnerCount}</p>
-                    <p><strong>Дата создания:</strong> ${new Date(giveaway.createdDate).toLocaleDateString('ru-RU')}</p>
-                `;
-                activeGiveawaysMain.appendChild(giveawayElement);
-            });
-        }
-        
-        function renderGiveawaysHistory() {
-            giveawaysHistoryPages.innerHTML = '';
-            giveawaysHistoryPagination.innerHTML = '';
-            
-            if (giveaways.length === 0) {
-                giveawaysHistoryPages.innerHTML = '<p>Розыгрышей еще не было</p>';
-                return;
-            }
-            
-            // Сортируем розыгрыши по дате создания (от новых к старым)
-            const sortedGiveaways = [...giveaways].sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
-            
-            // Рассчитываем количество страниц
-            const totalPages = Math.ceil(sortedGiveaways.length / historyItemsPerPage);
-            
-            // Создаем страницы
-            for (let page = 1; page <= totalPages; page++) {
-                const pageElement = document.createElement('div');
-                pageElement.className = `history-page ${page === currentHistoryPage ? 'active' : ''}`;
-                pageElement.id = `history-page-${page}`;
-                
-                const startIndex = (page - 1) * historyItemsPerPage;
-                const endIndex = startIndex + historyItemsPerPage;
-                const pageGiveaways = sortedGiveaways.slice(startIndex, endIndex);
-                
-                pageGiveaways.forEach(giveaway => {
-                    const giveawayElement = document.createElement('div');
-                    giveawayElement.className = 'giveaway-history-item';
-                    
-                    const giveawayWinners = winners.filter(w => w.giveawayId === giveaway.id);
-                    const participantCount = participants.filter(p => p.giveawayId === giveaway.id).length;
-                    
-                    let winnersHTML = '';
-                    if (giveawayWinners.length > 0) {
-                        winnersHTML = `
-                            <div class="winners-grid">
-                                ${giveawayWinners.map(winner => `
-                                    <div class="winner-card ${winner.confirmed ? 'confirmed' : ''}">
-                                        <div class="winner-name">
-                                            <a href="https://twitch.tv/${winner.twitch}" target="_blank" class="profile-link">${winner.twitch}</a>
-                                            ${winner.confirmed ? '✅' : ''}
-                                        </div>
-                                        <div class="history-date">${new Date(winner.date).toLocaleString()}</div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        `;
-                    } else {
-                        winnersHTML = '<p>Победители еще не определены</p>';
-                    }
-                    
-                    const statusText = giveaway.isCompleted ? 'Завершен' : 'Активен';
-                    const statusClass = giveaway.isCompleted ? 'status-completed' : 'status-active';
-                    
-                    giveawayElement.innerHTML = `
-                        <div class="giveaway-history-header">
-                            <div class="giveaway-history-title">
-                                ${giveaway.title} 
-                                <span class="status-badge ${statusClass}">${statusText}</span>
-                            </div>
-                            <div class="giveaway-history-date">
-                                ${new Date(giveaway.createdDate).toLocaleDateString('ru-RU')}
-                            </div>
-                        </div>
-                        <div class="giveaway-history-prize">
-                            <strong>Приз:</strong> ${giveaway.prize}
-                        </div>
-                        <p><strong>Участников:</strong> ${participantCount}</p>
-                        <p><strong>Победители:</strong></p>
-                        ${winnersHTML}
-                    `;
-                    pageElement.appendChild(giveawayElement);
-                });
-                
-                giveawaysHistoryPages.appendChild(pageElement);
-            }
-            
-            // Создаем пагинацию
-            if (totalPages > 1) {
-                // Кнопка "Назад"
-                const prevButton = document.createElement('button');
-                prevButton.textContent = '←';
-                prevButton.disabled = currentHistoryPage === 1;
-                prevButton.addEventListener('click', () => {
-                    if (currentHistoryPage > 1) {
-                        currentHistoryPage--;
-                        renderGiveawaysHistory();
-                    }
-                });
-                giveawaysHistoryPagination.appendChild(prevButton);
-                
-                // Номера страниц
-                for (let i = 1; i <= totalPages; i++) {
-                    const pageButton = document.createElement('button');
-                    pageButton.textContent = i;
-                    pageButton.className = i === currentHistoryPage ? 'active' : '';
-                    pageButton.addEventListener('click', () => {
-                        currentHistoryPage = i;
-                        renderGiveawaysHistory();
-                    });
-                    giveawaysHistoryPagination.appendChild(pageButton);
-                }
-                
-                // Кнопка "Вперед"
-                const nextButton = document.createElement('button');
-                nextButton.textContent = '→';
-                nextButton.disabled = currentHistoryPage === totalPages;
-                nextButton.addEventListener('click', () => {
-                    if (currentHistoryPage < totalPages) {
-                        currentHistoryPage++;
-                        renderGiveawaysHistory();
-                    }
-                });
-                giveawaysHistoryPagination.appendChild(nextButton);
-            }
-        }
-        
-        function renderActiveGiveaways() {
-            activeGiveawaysList.innerHTML = '';
-            
-            const activeGiveaways = giveaways.filter(g => g.isActive);
-            
-            if (activeGiveaways.length === 0) {
-                activeGiveawaysList.innerHTML = '<p>Активных розыгрышей нет</p>';
-                return;
-            }
-            
-            activeGiveaways.forEach(giveaway => {
-                const giveawayElement = document.createElement('div');
-                giveawayElement.className = `giveaway-card ${giveaway.isCompleted ? 'completed' : 'active'}`;
-                
-                const winnerCount = winners.filter(w => w.giveawayId === giveaway.id).length;
-                const participantCount = participants.filter(p => p.giveawayId === giveaway.id).length;
-                
-                giveawayElement.innerHTML = `
-                    <h4>${giveaway.title} ${giveaway.isCompleted ? '<span class="status-badge status-completed">Завершен</span>' : '<span class="status-badge status-active">Активен</span>'}</h4>
-                    <p><strong>Приз:</strong> ${giveaway.prize}</p>
-                    <p><strong>Кодовое слово:</strong> ${giveaway.codeWord}</p>
-                    <p><strong>Количество победителей:</strong> ${giveaway.winnersCount}</p>
-                    <p><strong>Участников:</strong> ${participantCount}</p>
-                    <p><strong>Выбрано победителей:</strong> ${winnerCount}</p>
-                    <div class="action-buttons">
-                        <button class="edit-giveaway" data-id="${giveaway.id}">Редактировать</button>
-                        <button class="complete-giveaway" data-id="${giveaway.id}" ${giveaway.isCompleted ? 'disabled' : ''}>Завершить розыгрыш</button>
-                        <button class="delete-giveaway" data-id="${giveaway.id}" style="margin-left: 10px;">Удалить</button>
-                    </div>
-                `;
-                activeGiveawaysList.appendChild(giveawayElement);
-            });
-            
-            // Добавляем обработчики для кнопок редактирования и удаления
-            document.querySelectorAll('.edit-giveaway').forEach(button => {
-                button.addEventListener('click', function() {
-                    const giveawayId = this.getAttribute('data-id');
-                    const giveaway = giveaways.find(g => g.id === giveawayId);
-                    
-                    if (giveaway) {
-                        giveawayTitleInput.value = giveaway.title;
-                        giveawayPrizeInput.value = giveaway.prize;
-                        giveawayCodeWordInput.value = giveaway.codeWord;
-                        winnersCountInput.value = giveaway.winnersCount;
-                        
-                        // Сохраняем ID для обновления
-                        giveawayTitleInput.setAttribute('data-edit-id', giveawayId);
-                    }
-                });
-            });
-            
-            // Обработчики для завершения розыгрыша
-            document.querySelectorAll('.complete-giveaway').forEach(button => {
-                button.addEventListener('click', function() {
-                    const giveawayId = this.getAttribute('data-id');
-                    completeGiveaway(giveawayId);
-                });
-            });
-            
-            document.querySelectorAll('.delete-giveaway').forEach(button => {
-                button.addEventListener('click', function() {
-                    const giveawayId = this.getAttribute('data-id');
-                    
-                    if (confirm('Вы уверены, что хотите удалить этот розыгрыш?')) {
-                        giveaways = giveaways.filter(g => g.id !== giveawayId);
-                        // Также удаляем участников и победителей этого розыгрыша
-                        participants = participants.filter(p => p.giveawayId !== giveawayId);
-                        winners = winners.filter(w => w.giveawayId !== giveawayId);
-                        saveData();
-                        renderActiveGiveaways();
-                        updateGiveawaySelectors();
-                        renderParticipantsTable();
-                        renderWinnersManagement();
-                        renderActiveGiveawaysMain();
-                        renderGiveawaysHistory();
-                    }
-                });
-            });
-        }
-        
-        function renderParticipantsTable() {
-            participantsTableBody.innerHTML = '';
-            
-            const filterValue = giveawayFilter.value;
-            let filteredParticipants = participants;
-            
-            if (filterValue !== 'all') {
-                filteredParticipants = participants.filter(p => p.giveawayId === filterValue);
-            }
-            
-            if (filteredParticipants.length === 0) {
-                participantsTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Участники не найдены</td></tr>';
-                return;
-            }
-            
-            filteredParticipants.forEach(participant => {
-                const giveaway = giveaways.find(g => g.id === participant.giveawayId);
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td><a href="https://twitch.tv/${participant.twitch}" target="_blank" class="profile-link">${participant.twitch}</a></td>
-                    <td><a href="https://t.me/${participant.telegram}" target="_blank" class="profile-link">@${participant.telegram}</a></td>
-                    <td>${giveaway ? giveaway.title : 'Неизвестно'}</td>
-                    <td>${new Date(participant.registrationDate).toLocaleString()}</td>
-                    <td>
-                        <button class="delete-participant" data-id="${participant.id}">Удалить</button>
-                    </td>
-                `;
-                participantsTableBody.appendChild(row);
-            });
-            
-            // Добавляем обработчики для кнопок удаления участников
-            document.querySelectorAll('.delete-participant').forEach(button => {
-                button.addEventListener('click', function() {
-                    const participantId = this.getAttribute('data-id');
-                    deleteParticipant(participantId);
-                });
-            });
-        }
-        
-        function renderWinnersManagement() {
-            winnersManagementList.innerHTML = '';
-            
-            if (winners.length === 0) {
-                winnersManagementList.innerHTML = '<p>Победители еще не определены</p>';
-                return;
-            }
-            
-            // Группируем победителей по розыгрышам
-            const winnersByGiveaway = {};
-            winners.forEach(winner => {
-                if (!winnersByGiveaway[winner.giveawayId]) {
-                    winnersByGiveaway[winner.giveawayId] = [];
-                }
-                winnersByGiveaway[winner.giveawayId].push(winner);
-            });
-            
-            // Отображаем победителей по розыгрышам
-            for (const giveawayId in winnersByGiveaway) {
-                const giveaway = giveaways.find(g => g.id === giveawayId);
-                if (!giveaway) continue;
-                
-                const giveawayWinners = winnersByGiveaway[giveawayId];
-                
-                const giveawayElement = document.createElement('div');
-                giveawayElement.className = 'giveaway-card';
-                giveawayElement.innerHTML = `
-                    <h4>${giveaway.title}</h4>
-                    <div class="winners-grid">
-                        ${giveawayWinners.map(winner => `
-                            <div class="winner-card ${winner.confirmed ? 'confirmed' : ''}" data-id="${winner.id}">
-                                <div class="winner-name">
-                                    <a href="https://twitch.tv/${winner.twitch}" target="_blank" class="profile-link">${winner.twitch}</a>
-                                    ${winner.confirmed ? '✅' : ''}
-                                </div>
-                                <div>
-                                    <a href="https://t.me/${winner.telegram}" target="_blank" class="profile-link">@${winner.telegram}</a>
-                                </div>
-                                <div class="history-date">${new Date(winner.date).toLocaleString()}</div>
-                                <div class="action-buttons">
-                                    <button class="delete-winner" data-id="${winner.id}">Удалить</button>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-                winnersManagementList.appendChild(giveawayElement);
-            }
-            
-            // Добавляем обработчики для выбора победителя
-            document.querySelectorAll('.winner-card').forEach(card => {
-                card.addEventListener('click', function() {
-                    // Убираем выделение у всех карточек
-                    document.querySelectorAll('.winner-card').forEach(c => {
-                        c.classList.remove('selected');
-                    });
-                    
-                    // Выделяем выбранную карточку
-                    this.classList.add('selected');
-                    selectedWinnerId = this.getAttribute('data-id');
-                    const winnerName = this.querySelector('.winner-name').textContent.trim();
-                    selectedWinnerName.textContent = winnerName;
-                    selectedWinnerInfo.style.display = 'block';
-                });
-            });
-            
-            // Добавляем обработчики для кнопок удаления победителей
-            document.querySelectorAll('.delete-winner').forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.stopPropagation(); // Предотвращаем всплытие события
-                    const winnerId = this.getAttribute('data-id');
-                    
-                    if (confirm('Вы уверены, что хотите удалить этого победителя?')) {
-                        winners = winners.filter(w => w.id !== winnerId);
-                        saveData();
-                        renderWinnersManagement();
-                        renderGiveawaysHistory();
-                    }
-                });
-            });
-        }
-        
-        function drawRandomWinner() {
-            const giveawayId = giveawayForWinner.value;
-            if (!giveawayId) {
-                showMessage(winnerMessage, 'Выберите розыгрыш', 'error');
-                return;
-            }
-            
-            const giveaway = giveaways.find(g => g.id === giveawayId);
-            if (!giveaway) {
-                showMessage(winnerMessage, 'Розыгрыш не найден', 'error');
-                return;
-            }
-            
-            const giveawayParticipants = participants.filter(p => p.giveawayId === giveawayId);
-            if (giveawayParticipants.length === 0) {
-                showMessage(winnerMessage, 'Нет участников для розыгрыша', 'error');
-                return;
-            }
-            
-            // Проверяем, сколько победителей уже выбрано
-            const existingWinners = winners.filter(w => w.giveawayId === giveawayId);
-            if (existingWinners.length >= giveaway.winnersCount) {
-                showMessage(winnerMessage, 'Все победители уже выбраны для этого розыгрыша', 'error');
-                return;
-            }
-            
-            // Выбираем случайного победителя из тех, кто еще не выиграл
-            const availableParticipants = giveawayParticipants.filter(p => 
-                !existingWinners.some(w => w.twitch === p.twitch)
-            );
-            
-            if (availableParticipants.length === 0) {
-                showMessage(winnerMessage, 'Нет доступных участников для выбора победителя', 'error');
-                return;
-            }
-            
-            const randomIndex = Math.floor(Math.random() * availableParticipants.length);
-            const winner = availableParticipants[randomIndex];
-            
-            addWinner(winner, giveawayId);
-        }
-        
-        function addWinner(winner, giveawayId) {
-            // Получаем все победы участника (включая текущую)
-            const allWins = winners.filter(w => w.twitch === winner.twitch);
-            
-            // Проверяем историю побед участника (без текущей победы)
-            const previousWins = allWins.filter(w => w.giveawayId !== giveawayId);
-            const isFirstWin = previousWins.length === 0;
-            
-            // Получаем полную историю побед участника для отображения
-            const userWinHistory = winners
-                .filter(w => w.twitch === winner.twitch)
-                .sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            // Создаем запись о победителе
-            const winnerRecord = {
-                id: generateId(),
-                giveawayId,
-                twitch: winner.twitch,
-                telegram: winner.telegram,
-                date: new Date().toISOString(),
-                confirmed: false
-            };
-            
-            winners.push(winnerRecord);
-            saveData();
-            
-            // Показываем сообщение о победителе с информацией о предыдущих победах
-            let winMessage = `Победитель: <a href="https://twitch.tv/${winner.twitch}" target="_blank" class="profile-link">${winner.twitch}</a> (Telegram: <a href="https://t.me/${winner.telegram}" target="_blank" class="profile-link">@${winner.telegram}</a>)`;
-            
-            if (isFirstWin) {
-                winMessage += `<div class="winner-history first-time-winner">🎉 Первая победа!</div>`;
-            } else {
-                winMessage += `<div class="winner-history repeat-winner">🏆 Уже побеждал ${previousWins.length} раз(а) ранее</div>`;
-                
-                // Показываем историю побед
-                if (userWinHistory.length > 0) {
-                    winMessage += `<div class="win-history-list">`;
-                    userWinHistory.forEach(win => {
-                        const giveawayTitle = giveaways.find(g => g.id === win.giveawayId)?.title || 'Неизвестный розыгрыш';
-                        winMessage += `<div class="win-history-item">${new Date(win.date).toLocaleString('ru-RU')} - ${giveawayTitle}</div>`;
-                    });
-                    winMessage += `</div>`;
-                }
-            }
-            
-            winMessage += `<div>🎲 Выбран случайным образом</div>`;
-            winMessage += `<div><strong>Не забудьте подтвердить победителя и завершить розыгрыш!</strong></div>`;
-            
-            showMessage(winnerMessage, winMessage, 'success');
-            
-            // Обновляем отображение
-            renderWinnersManagement();
-            renderGiveawaysHistory();
-        }
-        
-        function confirmWinner() {
-            if (!selectedWinnerId) {
-                showMessage(winnerMessage, 'Выберите победителя для подтверждения', 'error');
-                return;
-            }
-            
-            const winnerIndex = winners.findIndex(w => w.id === selectedWinnerId);
-            if (winnerIndex === -1) {
-                showMessage(winnerMessage, 'Победитель не найден', 'error');
-                return;
-            }
-            
-            const winner = winners[winnerIndex];
-            const giveawayId = winner.giveawayId;
-            const giveawayIndex = giveaways.findIndex(g => g.id === giveawayId);
-            
-            if (giveawayIndex === -1) {
-                showMessage(winnerMessage, 'Розыгрыш не найден', 'error');
-                return;
-            }
-            
-            // Подтверждаем победителя
-            winners[winnerIndex].confirmed = true;
-            
-            // Автоматически завершаем розыгрыш
-            giveaways[giveawayIndex].isCompleted = true;
-            giveaways[giveawayIndex].completedDate = new Date().toISOString();
-            
-            saveData();
-            
-            showMessage(winnerMessage, `Победитель <strong>${winner.twitch}</strong> подтвержден и розыгрыш завершен! ✅`, 'success');
-            
-            // Удаляем завершенный розыгрыш из селектора выбора розыгрыша для победителей
-            updateGiveawaySelectors();
-            
-            // Сбрасываем выбор
-            selectedWinnerId = null;
-            selectedWinnerInfo.style.display = 'none';
-            document.querySelectorAll('.winner-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            
-            // Обновляем все отображения
-            renderActiveGiveaways();
-            renderActiveGiveawaysMain();
-            renderGiveawaysHistory();
-            renderWinnersManagement();
-            
-            // Сбрасываем выбор розыгрыша на главной странице
-            currentGiveawayId = null;
-            currentGiveawaySelect.value = '';
-            updateCurrentGiveawayInfo();
-        }
-        
-        function redrawWinner() {
-            if (!selectedWinnerId) {
-                showMessage(winnerMessage, 'Выберите победителя для переизбрания', 'error');
-                return;
-            }
-            
-            const winnerIndex = winners.findIndex(w => w.id === selectedWinnerId);
-            if (winnerIndex === -1) {
-                showMessage(winnerMessage, 'Победитель не найден', 'error');
-                return;
-            }
-            
-            const winner = winners[winnerIndex];
-            const giveawayId = winner.giveawayId;
-            const giveaway = giveaways.find(g => g.id === giveawayId);
-            
-            if (!giveaway) {
-                showMessage(winnerMessage, 'Розыгрыш не найден', 'error');
-                return;
-            }
-            
-            const giveawayParticipants = participants.filter(p => p.giveawayId === giveawayId);
-            if (giveawayParticipants.length === 0) {
-                showMessage(winnerMessage, 'Нет участников для розыгрыша', 'error');
-                return;
-            }
-            
-            // Выбираем случайного победителя из тех, кто еще не выиграл (исключая текущего)
-            const availableParticipants = giveawayParticipants.filter(p => 
-                !winners.some(w => w.twitch === p.twitch && w.giveawayId === giveawayId)
-            );
-            
-            if (availableParticipants.length === 0) {
-                showMessage(winnerMessage, 'Нет доступных участников для переизбрания', 'error');
-                return;
-            }
-            
-            const randomIndex = Math.floor(Math.random() * availableParticipants.length);
-            const newWinner = availableParticipants[randomIndex];
-            
-            // Обновляем запись победителя
-            winners[winnerIndex] = {
-                ...winners[winnerIndex],
-                twitch: newWinner.twitch,
-                telegram: newWinner.telegram,
-                date: new Date().toISOString(),
-                confirmed: false
-            };
-            
-            saveData();
-            
-            // Показываем сообщение о переизбрании
-            showMessage(winnerMessage, `Победитель переизбран! Новый победитель: <a href="https://twitch.tv/${newWinner.twitch}" target="_blank" class="profile-link">${newWinner.twitch}</a>`, 'success');
-            
-            // Сбрасываем выбор
-            selectedWinnerId = null;
-            selectedWinnerInfo.style.display = 'none';
-            document.querySelectorAll('.winner-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            
-            // Обновляем отображение
-            renderWinnersManagement();
-            renderGiveawaysHistory();
-        }
-        
-        function drawAllWinners() {
-            if (!isAdminLoggedIn) {
-                showMessage(winnerMessage, 'Необходимо войти в админ-панель', 'error');
-                return;
-            }
-            
-            const giveawayId = giveawayForWinner.value;
-            if (!giveawayId) {
-                showMessage(winnerMessage, 'Выберите розыгрыш', 'error');
-                return;
-            }
-            
-            const giveaway = giveaways.find(g => g.id === giveawayId);
-            if (!giveaway) {
-                showMessage(winnerMessage, 'Розыгрыш не найден', 'error');
-                return;
-            }
-            
-            const giveawayParticipants = participants.filter(p => p.giveawayId === giveawayId);
-            if (giveawayParticipants.length === 0) {
-                showMessage(winnerMessage, 'Нет участников для розыгрыша', 'error');
-                return;
-            }
-            
-            // Проверяем, сколько победителей уже выбрано
-            const existingWinners = winners.filter(w => w.giveawayId === giveawayId);
-            const winnersNeeded = giveaway.winnersCount - existingWinners.length;
-            
-            if (winnersNeeded <= 0) {
-                showMessage(winnerMessage, 'Все победители уже выбраны для этого розыгрыша', 'error');
-                return;
-            }
-            
-            // Выбираем случайных победителей из тех, кто еще не выиграл
-            const availableParticipants = giveawayParticipants.filter(p => 
-                !existingWinners.some(w => w.twitch === p.twitch)
-            );
-            
-            if (availableParticipants.length < winnersNeeded) {
-                showMessage(winnerMessage, `Недостаточно участников для выбора ${winnersNeeded} победителей`, 'error');
-                return;
-            }
-            
-            // Выбираем нужное количество победителей
-            const selectedWinners = [];
-            const shuffled = [...availableParticipants].sort(() => 0.5 - Math.random());
-            
-            for (let i = 0; i < winnersNeeded; i++) {
-                const winner = shuffled[i];
-                
-                const winnerRecord = {
-                    id: generateId(),
-                    giveawayId,
-                    twitch: winner.twitch,
-                    telegram: winner.telegram,
-                    date: new Date().toISOString(),
-                    confirmed: false
+                // Получаем данные формы
+                const formData = {
+                    date: document.getElementById('date').value,
+                    time: document.getElementById('time').value,
+                    locations: Array.from(document.querySelectorAll('input[name="location"]:checked')).map(cb => cb.value),
+                    activities: Array.from(document.querySelectorAll('input[name="activity"]:checked')).map(cb => cb.value),
+                    message: document.getElementById('message').value
                 };
                 
-                winners.push(winnerRecord);
-                selectedWinners.push(winner);
-            }
-            
-            saveData();
-            
-            // Показываем сообщение о победителях
-            const winnersText = selectedWinners.map(w => {
-                const previousWins = winners.filter(win => win.twitch === w.twitch).length - 1;
-                let winInfo = `<a href="https://twitch.tv/${w.twitch}" target="_blank" class="profile-link">${w.twitch}</a>`;
+                // Сохраняем в localStorage
+                saveResponse(formData);
                 
-                if (previousWins > 0) {
-                    // Получаем историю побед
-                    const userWinHistory = winners
-                        .filter(win => win.twitch === w.twitch && win.giveawayId !== giveawayId)
-                        .sort((a, b) => new Date(b.date) - new Date(a.date))
-                        .slice(0, 3); // Показываем только последние 3 победы
-                    
-                    const lastWinDate = userWinHistory.length > 0 ? 
-                        new Date(userWinHistory[0].date).toLocaleDateString('ru-RU') : 'неизвестно';
-                    
-                    winInfo += ` [${previousWins} предыдущих побед, последняя: ${lastWinDate}]`;
+                // Показываем сообщение об успехе
+                document.getElementById('successMessage').style.display = 'block';
+                
+                // Прокручиваем к сообщению
+                document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+                
+                // Сбрасываем форму
+                document.getElementById('invitationForm').reset();
+                
+                // Восстанавливаем значения по умолчанию
+                document.getElementById('date').value = defaultDateString;
+                document.getElementById('time').value = "18:00";
+                
+                // Обновляем админ-панель если она открыта
+                if (!document.getElementById('responsesContainer').classList.contains('hidden')) {
+                    loadResponses();
+                }
+            });
+            
+            // Обработка кнопки показа админ-панели
+            document.getElementById('showAdminBtn').addEventListener('click', function() {
+                const password = document.getElementById('adminPassword').value;
+                
+                // Простая проверка пароля
+                if (password === 'Penza2023') {
+                    document.getElementById('responsesContainer').classList.remove('hidden');
+                    loadResponses();
                 } else {
-                    winInfo += ` [первая победа]`;
+                    alert('Неверный пароль! Попробуйте еще раз.');
                 }
-                
-                return winInfo;
-            }).join(', ');
-            
-            showMessage(winnerMessage, `Победители: ${winnersText}`, 'success');
-            
-            // Обновляем отображение победителей
-            renderWinnersManagement();
-            renderGiveawaysHistory();
-        }
-        
-        function deleteParticipant(participantId) {
-            if (confirm('Вы уверены, что хотите удалить этого участника?')) {
-                participants = participants.filter(p => p.id !== participantId);
-                saveData();
-                renderParticipantsTable();
-                showMessage(winnerMessage, 'Участник удален', 'success');
-            }
-        }
-        
-        function completeGiveaway(giveawayId) {
-            if (confirm('Вы уверены, что хотите завершить этот розыгрыш? После завершения регистрация будет невозможна.')) {
-                const giveawayIndex = giveaways.findIndex(g => g.id === giveawayId);
-                if (giveawayIndex !== -1) {
-                    giveaways[giveawayIndex].isCompleted = true;
-                    giveaways[giveawayIndex].completedDate = new Date().toISOString();
-                    saveData();
-                    renderActiveGiveaways();
-                    updateGiveawaySelectors();
-                    renderActiveGiveawaysMain();
-                    renderGiveawaysHistory();
-                    showMessage(winnerMessage, 'Розыгрыш завершен', 'success');
-                }
-            }
-        }
-        
-        function registerParticipant() {
-            const giveawayId = currentGiveawaySelect.value;
-            if (!giveawayId) {
-                showMessage(registrationMessage, 'Пожалуйста, выберите розыгрыш', 'error');
-                return;
-            }
-            
-            const giveaway = giveaways.find(g => g.id === giveawayId);
-            if (!giveaway) {
-                showMessage(registrationMessage, 'Розыгрыш не найден', 'error');
-                return;
-            }
-            
-            // Проверяем, завершен ли розыгрыш
-            if (giveaway.isCompleted) {
-                showMessage(registrationMessage, 'Этот розыгрыш уже завершен, регистрация невозможна', 'error');
-                return;
-            }
-            
-            const twitch = participantTwitchInput.value.trim();
-            const telegram = participantTelegramInput.value.trim();
-            const code = participantCodeInput.value.trim();
-            
-            if (!twitch || !telegram || !code) {
-                showMessage(registrationMessage, 'Пожалуйста, заполните все поля', 'error');
-                return;
-            }
-            
-            if (code !== giveaway.codeWord) {
-                showMessage(registrationMessage, 'Неверное кодовое слово', 'error');
-                return;
-            }
-            
-            // Проверяем, нет ли уже участника с таким twitch или telegram в этом розыгрыше
-            if (participants.some(p => p.giveawayId === giveawayId && (p.twitch === twitch || p.telegram === telegram))) {
-                showMessage(registrationMessage, 'Участник с таким Twitch или Telegram уже зарегистрирован в этом розыгрыше', 'error');
-                return;
-            }
-            
-            const participant = {
-                id: generateId(),
-                giveawayId,
-                twitch,
-                telegram,
-                registrationDate: new Date().toISOString()
-            };
-            
-            participants.push(participant);
-            saveData();
-            
-            showMessage(registrationMessage, 'Вы успешно зарегистрированы на розыгрыш!', 'success');
-            
-            // Очищаем поля ввода
-            participantTwitchInput.value = '';
-            participantTelegramInput.value = '';
-            participantCodeInput.value = '';
-            
-            // Обновляем информацию о текущем розыгрыше
-            updateCurrentGiveawayInfo();
-            
-            // Обновляем таблицу участников в админке
-            if (isAdminLoggedIn) {
-                renderParticipantsTable();
-            }
-            
-            // Обновляем списки розыгрышей
-            renderActiveGiveawaysMain();
-            renderGiveawaysHistory();
-        }
-        
-        function showMessage(element, text, type) {
-            element.innerHTML = `<div class="message ${type}">${text}</div>`;
-            
-            // Автоматически скрываем сообщение через 5 секунд
-            setTimeout(() => {
-                element.innerHTML = '';
-            }, 5000);
-        }
-        
-        function adminLogin() {
-            const login = adminLoginInput.value.trim();
-            const password = adminPasswordInput.value.trim();
-            
-            // Простая проверка логина и пароля
-            if (login === 'admin' && password === 'admin123') {
-                isAdminLoggedIn = true;
-                showMessage(adminLoginMessage, 'Успешный вход в админ-панель', 'success');
-                
-                // Переключаем на вкладку управления розыгрышами
-                switchTab('giveaways');
-                
-                // Обновляем данные
-                renderActiveGiveaways();
-                renderParticipantsTable();
-                renderWinnersManagement();
-            } else {
-                showMessage(adminLoginMessage, 'Неверный логин или пароль', 'error');
-            }
-        }
-        
-        function createGiveaway() {
-            if (!isAdminLoggedIn) {
-                showMessage(giveawayMessage, 'Необходимо войти в админ-панель', 'error');
-                return;
-            }
-            
-            const title = giveawayTitleInput.value.trim();
-            const prize = giveawayPrizeInput.value.trim();
-            const codeWord = giveawayCodeWordInput.value.trim();
-            const winnersCount = parseInt(winnersCountInput.value) || 1;
-            
-            if (!title || !prize || !codeWord) {
-                showMessage(giveawayMessage, 'Пожалуйста, заполните все поля', 'error');
-                return;
-            }
-            
-            const giveaway = {
-                id: generateId(),
-                title,
-                prize,
-                codeWord,
-                winnersCount,
-                isActive: true,
-                isCompleted: false,
-                createdDate: new Date().toISOString()
-            };
-            
-            giveaways.push(giveaway);
-            saveData();
-            
-            showMessage(giveawayMessage, 'Розыгрыш успешно создан', 'success');
-            
-            // Очищаем поля ввода
-            giveawayTitleInput.value = '';
-            giveawayPrizeInput.value = '';
-            giveawayCodeWordInput.value = '';
-            winnersCountInput.value = '1';
-            
-            // Обновляем селекторы и списки
-            updateGiveawaySelectors();
-            renderActiveGiveaways();
-            renderActiveGiveawaysMain();
-            renderGiveawaysHistory();
-        }
-        
-        function updateGiveaway() {
-            if (!isAdminLoggedIn) {
-                showMessage(giveawayMessage, 'Необходимо войти в админ-панель', 'error');
-                return;
-            }
-            
-            const giveawayId = giveawayTitleInput.getAttribute('data-edit-id');
-            if (!giveawayId) {
-                showMessage(giveawayMessage, 'Сначала выберите розыгрыш для редактирования', 'error');
-                return;
-            }
-            
-            const title = giveawayTitleInput.value.trim();
-            const prize = giveawayPrizeInput.value.trim();
-            const codeWord = giveawayCodeWordInput.value.trim();
-            const winnersCount = parseInt(winnersCountInput.value) || 1;
-            
-            if (!title || !prize || !codeWord) {
-                showMessage(giveawayMessage, 'Пожалуйста, заполните все поля', 'error');
-                return;
-            }
-            
-            const giveawayIndex = giveaways.findIndex(g => g.id === giveawayId);
-            if (giveawayIndex === -1) {
-                showMessage(giveawayMessage, 'Розыгрыш не найден', 'error');
-                return;
-            }
-            
-            giveaways[giveawayIndex] = {
-                ...giveaways[giveawayIndex],
-                title,
-                prize,
-                codeWord,
-                winnersCount
-            };
-            
-            saveData();
-            
-            showMessage(giveawayMessage, 'Розыгрыш успешно обновлен', 'success');
-            
-            // Очищаем поля ввода
-            giveawayTitleInput.value = '';
-            giveawayPrizeInput.value = '';
-            giveawayCodeWordInput.value = '';
-            winnersCountInput.value = '1';
-            giveawayTitleInput.removeAttribute('data-edit-id');
-            
-            // Обновляем селекторы и списки
-            updateGiveawaySelectors();
-            renderActiveGiveaways();
-            renderActiveGiveawaysMain();
-            renderGiveawaysHistory();
-            
-            // Обновляем информацию о текущем розыгрыше, если он был выбран
-            if (currentGiveawayId === giveawayId) {
-                updateCurrentGiveawayInfo();
-            }
-        }
-        
-        function switchTab(tabName) {
-            // Скрываем все вкладки
-            tabContents.forEach(tab => {
-                tab.classList.remove('active');
             });
             
-            // Убираем активный класс со всех кнопок
-            tabButtons.forEach(button => {
-                button.classList.remove('active');
-            });
-            
-            // Показываем выбранную вкладку
-            document.getElementById(`${tabName}-tab`).classList.add('active');
-            
-            // Активируем соответствующую кнопку
-            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-        }
-        
-        // Инициализация
-        document.addEventListener('DOMContentLoaded', function() {
-            updateGiveawaySelectors();
-            updateCurrentGiveawayInfo();
-            renderActiveGiveawaysMain();
-            renderGiveawaysHistory();
-            
-            // Обработчики событий
-            registerParticipantBtn.addEventListener('click', registerParticipant);
-            
-            currentGiveawaySelect.addEventListener('change', function() {
-                currentGiveawayId = this.value;
-                updateCurrentGiveawayInfo();
-            });
-            
-            adminBtn.addEventListener('click', function() {
-                adminPanel.style.display = 'block';
-            });
-            
-            closeAdminBtn.addEventListener('click', function() {
-                adminPanel.style.display = 'none';
-            });
-            
-            adminLoginBtn.addEventListener('click', adminLogin);
-            
-            createGiveawayBtn.addEventListener('click', createGiveaway);
-            updateGiveawayBtn.addEventListener('click', updateGiveaway);
-            
-            giveawayFilter.addEventListener('change', renderParticipantsTable);
-            
-            giveawayForWinner.addEventListener('change', function() {
-                // Обновляем доступность кнопок при смене розыгрыша
-            });
-            
-            drawRandomBtn.addEventListener('click', drawRandomWinner);
-            drawAllWinnersBtn.addEventListener('click', drawAllWinners);
-            confirmWinnerBtn.addEventListener('click', confirmWinner);
-            confirmRedrawBtn.addEventListener('click', redrawWinner);
-            
-            // Обработчики синхронизации
-            exportDataBtn.addEventListener('click', function() {
-                const dataStr = exportAllData();
-                showMessage(syncMessage, 'Данные успешно экспортированы в файл', 'success');
-            });
-            
-            importDataBtn.addEventListener('click', function() {
-                importFileInput.click();
-            });
-            
-            importFileInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const dataStr = e.target.result;
-                        if (importData(dataStr)) {
-                            showMessage(syncMessage, 'Данные успешно импортированы', 'success');
-                        } else {
-                            showMessage(syncMessage, 'Ошибка при импорте данных', 'error');
-                        }
-                    };
-                    reader.readAsText(file);
-                }
-                // Сбрасываем значение input, чтобы можно было выбрать тот же файл снова
-                importFileInput.value = '';
-            });
-            
-            // Обработчики синхронизации в админке
-            adminExportDataBtn.addEventListener('click', function() {
-                const dataStr = exportAllData();
-                dataTextarea.value = dataStr;
-                showMessage(adminSyncMessage, 'Данные успешно экспортированы', 'success');
-            });
-            
-            adminImportDataBtn.addEventListener('click', function() {
-                adminImportFileInput.click();
-            });
-            
-            adminImportFileInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const dataStr = e.target.result;
-                        dataTextarea.value = dataStr;
-                        if (importData(dataStr)) {
-                            showMessage(adminSyncMessage, 'Данные успешно импортированы', 'success');
-                        } else {
-                            showMessage(adminSyncMessage, 'Ошибка при импорте данных', 'error');
-                        }
-                    };
-                    reader.readAsText(file);
-                }
-                // Сбрасываем значение input, чтобы можно было выбрать тот же файл снова
-                adminImportFileInput.value = '';
-            });
-            
-            copyDataBtn.addEventListener('click', function() {
-                dataTextarea.select();
-                document.execCommand('copy');
-                showMessage(adminSyncMessage, 'Данные скопированы в буфер обмена', 'success');
-            });
-            
-            pasteDataBtn.addEventListener('click', function() {
-                navigator.clipboard.readText().then(text => {
-                    dataTextarea.value = text;
-                    showMessage(adminSyncMessage, 'Данные вставлены из буфера обмена', 'success');
-                }).catch(err => {
-                    showMessage(adminSyncMessage, 'Ошибка при чтении из буфера обмена', 'error');
+            // Функция сохранения ответа
+            function saveResponse(response) {
+                let responses = JSON.parse(localStorage.getItem('nyushaResponses') || '[]');
+                responses.push({
+                    ...response,
+                    timestamp: new Date().toISOString()
                 });
-            });
+                localStorage.setItem('nyushaResponses', JSON.stringify(responses));
+            }
             
-            // Обработчики вкладок
-            tabButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const tabName = this.getAttribute('data-tab');
-                    switchTab(tabName);
+            // Функция загрузки ответов
+            function loadResponses() {
+                const responses = JSON.parse(localStorage.getItem('nyushaResponses') || '[]');
+                const tableBody = document.getElementById('responsesTable');
+                const noResponsesDiv = document.getElementById('noResponses');
+                
+                tableBody.innerHTML = '';
+                
+                if (responses.length === 0) {
+                    noResponsesDiv.style.display = 'block';
+                    return;
+                }
+                
+                noResponsesDiv.style.display = 'none';
+                
+                // Показываем ответы в обратном порядке (последний первый)
+                responses.slice().reverse().forEach(response => {
+                    const row = document.createElement('tr');
+                    
+                    // Форматируем дату
+                    const dateObj = new Date(response.date);
+                    const formattedDate = dateObj.toLocaleDateString('ru-RU', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    });
+                    
+                    row.innerHTML = `
+                        <td>${formattedDate}</td>
+                        <td>${response.time}</td>
+                        <td>${response.locations.join(', ')}</td>
+                        <td>${response.activities.join(', ')}</td>
+                        <td>${response.message || '—'}</td>
+                    `;
+                    
+                    tableBody.appendChild(row);
                 });
-            });
+            }
             
-            // Добавляем возможность регистрации по нажатию Enter
-            const registrationInputs = [
-                participantTwitchInput, 
-                participantTelegramInput, 
-                participantCodeInput
+            // Добавляем немного "магии" для заманивания
+            const charmElement = document.querySelector('.charm-element');
+            
+            // Меняем текст в charm-element каждые 10 секунд
+            const charmMessages = [
+                "Нюша, эта прогулка будет волшебной!",
+                "Я обещаю, будет интересно!",
+                "Мы можем погулять там, где тебе нравится",
+                "Я подготовил сюрпризы для тебя!",
+                "Давай сделаем перерыв в делах?",
+                "Прогулка поможет отдохнуть и зарядиться энергией!"
             ];
             
-            registrationInputs.forEach(input => {
-                input.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        registerParticipant();
+            let messageIndex = 0;
+            setInterval(() => {
+                charmElement.querySelector('h3').textContent = charmMessages[messageIndex];
+                messageIndex = (messageIndex + 1) % charmMessages.length;
+            }, 10000);
+            
+            // Анимация при наведении на места прогулки
+            const locationCheckboxes = document.querySelectorAll('input[name="location"]');
+            locationCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        this.parentElement.style.transform = 'scale(1.05)';
+                        setTimeout(() => {
+                            this.parentElement.style.transform = 'scale(1)';
+                        }, 300);
                     }
                 });
-            });
-            
-            // Добавляем возможность входа в админку по нажатию Enter
-            adminPasswordInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    adminLogin();
-                }
             });
         });
     </script>
