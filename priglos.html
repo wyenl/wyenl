@@ -75,7 +75,7 @@
             }
         }
         
-        .invitation-card, .form-section, .admin-panel {
+        .invitation-card, .form-section, .admin-info {
             background-color: white;
             border-radius: 20px;
             padding: 30px;
@@ -91,7 +91,7 @@
             background: linear-gradient(to bottom right, #fdfcfb 0%, #f5f1e7 100%);
         }
         
-        .invitation-card h2, .form-section h2, .admin-panel h2 {
+        .invitation-card h2, .form-section h2, .admin-info h2 {
             color: #2575fc;
             margin-bottom: 20px;
             display: flex;
@@ -203,42 +203,6 @@
             box-shadow: 0 7px 15px rgba(106, 17, 203, 0.3);
         }
         
-        .admin-panel {
-            background-color: #f8f9fa;
-            border: 2px dashed #6a11cb;
-            margin-top: 40px;
-        }
-        
-        .responses-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        
-        .responses-table th, .responses-table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .responses-table th {
-            background-color: #f1f3f5;
-            color: #495057;
-        }
-        
-        .no-responses {
-            text-align: center;
-            padding: 30px;
-            color: #6c757d;
-            font-style: italic;
-        }
-        
-        .admin-info {
-            font-size: 0.9rem;
-            color: #6c757d;
-            margin-top: 10px;
-        }
-        
         .charm-element {
             text-align: center;
             margin: 20px 0;
@@ -267,10 +231,6 @@
             font-size: 0.9rem;
         }
         
-        .hidden {
-            display: none;
-        }
-        
         .success-message {
             background-color: #d4edda;
             color: #155724;
@@ -279,6 +239,57 @@
             text-align: center;
             margin-top: 20px;
             display: none;
+        }
+        
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+        }
+        
+        .loading i {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .admin-info {
+            background-color: #f8f9fa;
+            border: 2px dashed #6a11cb;
+            margin-top: 40px;
+        }
+        
+        .admin-info p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .telegram-info {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #0088cc;
+        }
+        
+        .vk-info {
+            background-color: #f3e5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #4c75a3;
         }
     </style>
 </head>
@@ -292,7 +303,7 @@
         <div class="charm-element">
             <i class="fas fa-magic"></i>
             <h3>Нюша, эта прогулка будет волшебной!</h3>
-            <p>Я подготовил специальный сайт для тебя, чтобы ты оценила мои старания и желание с тобой погулять!</p>
+            <p>Я подготовил специальные сюрпризы для тебя, чтобы отвлечься от дел и хорошо провести время</p>
         </div>
         
         <div class="content">
@@ -319,9 +330,9 @@
                     <p>Дорогая Нюша!</p>
                     <p>Я знаю, что ты часто занята или отдыхаешь, но я очень надеюсь, что ты сможешь найти немного времени для прогулки со мной.</p>
                     <p>Я подготовил несколько вариантов, где мы можем погулять и чем заняться. Уверен, нам будет очень весело!</p>
-                    <p>Пенза может быть очень красивой, особенно в хорошей компании.</p>
+                    <p>Пенза может быть очень красивой, особенно в хорошей компании. Дай мне шанс показать тебе наш город с новой стороны.</p>
                     <p>С нетерпением жду твоего ответа!</p>
-                    <p style="text-align: right;">С теплом,<br>От Жени</p>
+                    <p style="text-align: right;">С теплом,<br>Твой Евгений</p>
                 </div>
             </div>
             
@@ -405,56 +416,67 @@
                         <textarea id="message" name="message" rows="3" placeholder="Можешь написать свои идеи или пожелания..."></textarea>
                     </div>
                     
-                    <button type="submit" class="submit-btn">
+                    <button type="submit" class="submit-btn" id="submitBtn">
                         <i class="fas fa-paper-plane"></i> Отправить приглашение
                     </button>
                 </form>
                 
                 <div id="successMessage" class="success-message">
                     <h3><i class="fas fa-check-circle"></i> Приглашение отправлено!</h3>
-                    <p>Женя получит твой ответ и обязательно свяжется с тобой. Ждём тебя на прогулке!</p>
+                    <p>Женя получил твой ответ в Telegram и обязательно свяжется с тобой. Ждём тебя на прогулке!</p>
+                </div>
+                
+                <div id="errorMessage" class="error-message">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Ошибка!</h3>
+                    <p id="errorText">Не удалось отправить приглашение. Попробуйте еще раз.</p>
                 </div>
             </div>
         </div>
         
-        <div class="admin-panel" id="adminPanel">
-            <h2><i class="fas fa-user-shield"></i> Админ-панель для Евгения</h2>
-            <p>Здесь будут отображаться ответы от Тебя</p>
-            <p class="admin-info">Пароль для просмотра: <strong>Обманул, тут нет пароля</strong> (введите в поле ниже)</p>
+        <div class="admin-info">
+            <h2><i class="fas fa-user-shield"></i> Информация для Евгения</h2>
             
-            <div class="form-group">
-                <label for="adminPassword">Введите пароль:</label>
-                <input type="password" id="adminPassword" placeholder="Введите пароль для доступа">
-                <button id="showAdminBtn" class="submit-btn" style="margin-top: 10px; padding: 12px;">
-                    <i class="fas fa-lock"></i> Показать ответы
+            <div class="telegram-info">
+                <h3><i class="fab fa-telegram"></i> Настройка Telegram бота</h3>
+                <p>1. Создайте бота через <a href="https://t.me/BotFather" target="_blank">@BotFather</a></p>
+                <p>2. Получите токен бота</p>
+                <p>3. Узнайте свой Chat ID через <a href="https://t.me/getmyid_bot" target="_blank">@getmyid_bot</a></p>
+                <p>4. Вставьте данные ниже и нажмите "Сохранить настройки"</p>
+                
+                <div class="form-group">
+                    <label for="botToken">Токен бота Telegram:</label>
+                    <input type="text" id="botToken" placeholder="Пример: 1234567890:ABCdefGHIjklMNOpqrsTUVwxyz">
+                </div>
+                
+                <div class="form-group">
+                    <label for="chatId">Ваш Chat ID:</label>
+                    <input type="text" id="chatId" placeholder="Пример: 987654321">
+                </div>
+                
+                <button id="saveSettingsBtn" class="submit-btn">
+                    <i class="fas fa-save"></i> Сохранить настройки
                 </button>
-            </div>
-            
-            <div id="responsesContainer" class="hidden">
-                <h3>Ответы от Нюши:</h3>
-                <table class="responses-table">
-                    <thead>
-                        <tr>
-                            <th>Дата</th>
-                            <th>Время</th>
-                            <th>Места</th>
-                            <th>Занятия</th>
-                            <th>Пожелания</th>
-                        </tr>
-                    </thead>
-                    <tbody id="responsesTable">
-                        <!-- Ответы будут загружены здесь -->
-                    </tbody>
-                </table>
-                <div id="noResponses" class="no-responses">
-                    <p>Пока ответов нет. Как только Нюша заполнит форму, они появятся здесь.</p>
+                
+                <div id="settingsSuccess" class="success-message" style="margin-top: 15px; display: none;">
+                    Настройки сохранены! Теперь ответы будут приходить в Telegram.
                 </div>
             </div>
+            
+            <div class="vk-info">
+                <h3><i class="fab fa-vk"></i> Альтернатива: VK бот</h3>
+                <p>Если хотите использовать VK вместо Telegram:</p>
+                <p>1. Создайте сообщество ВКонтакте</p>
+                <p>2. Включите "Сообщения сообщества"</p>
+                <p>3. В настройках API получите ключ доступа</p>
+                <p>4. Узнайте ID вашей страницы</p>
+            </div>
+            
+            <p><strong>Как это работает:</strong> Когда Нюша заполнит форму, ответ придет прямо в ваш Telegram. Вы получите уведомление на телефон.</p>
         </div>
         
         <div class="footer">
             <p>Создано с ❤️ специально для Нюши Бруно Гарсия</p>
-            <p>© 2025 Евгений Ивашин, Пенза</p>
+            <p>© 2023 Евгений Ивашин, Пенза</p>
         </div>
     </div>
 
@@ -473,107 +495,194 @@
             // Устанавливаем время по умолчанию - 18:00
             document.getElementById('time').value = "18:00";
             
+            // Загружаем сохранённые настройки Telegram
+            loadTelegramSettings();
+            
             // Обработка отправки формы
-            document.getElementById('invitationForm').addEventListener('submit', function(e) {
+            document.getElementById('invitationForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
-                // Получаем данные формы
-                const formData = {
-                    date: document.getElementById('date').value,
-                    time: document.getElementById('time').value,
-                    locations: Array.from(document.querySelectorAll('input[name="location"]:checked')).map(cb => cb.value),
-                    activities: Array.from(document.querySelectorAll('input[name="activity"]:checked')).map(cb => cb.value),
-                    message: document.getElementById('message').value
-                };
+                const submitBtn = document.getElementById('submitBtn');
+                const originalText = submitBtn.innerHTML;
                 
-                // Сохраняем в localStorage
-                saveResponse(formData);
-                
-                // Показываем сообщение об успехе
-                document.getElementById('successMessage').style.display = 'block';
-                
-                // Прокручиваем к сообщению
-                document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
-                
-                // Сбрасываем форму
-                document.getElementById('invitationForm').reset();
-                
-                // Восстанавливаем значения по умолчанию
-                document.getElementById('date').value = defaultDateString;
-                document.getElementById('time').value = "18:00";
-                
-                // Обновляем админ-панель если она открыта
-                if (!document.getElementById('responsesContainer').classList.contains('hidden')) {
-                    loadResponses();
+                try {
+                    // Показываем загрузку
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправка...';
+                    submitBtn.disabled = true;
+                    
+                    // Скрываем предыдущие сообщения
+                    document.getElementById('successMessage').style.display = 'none';
+                    document.getElementById('errorMessage').style.display = 'none';
+                    
+                    // Получаем данные формы
+                    const formData = {
+                        date: document.getElementById('date').value,
+                        time: document.getElementById('time').value,
+                        locations: Array.from(document.querySelectorAll('input[name="location"]:checked')).map(cb => cb.value),
+                        activities: Array.from(document.querySelectorAll('input[name="activity"]:checked')).map(cb => cb.value),
+                        message: document.getElementById('message').value || '',
+                        sender: 'Нюша Бруно Гарсия',
+                        timestamp: new Date().toLocaleString('ru-RU')
+                    };
+                    
+                    // Получаем настройки Telegram
+                    const botToken = localStorage.getItem('telegramBotToken');
+                    const chatId = localStorage.getItem('telegramChatId');
+                    
+                    // Проверяем, настроен ли Telegram
+                    if (!botToken || !chatId) {
+                        throw new Error('Telegram бот не настроен. Евгений должен сначала сохранить настройки.');
+                    }
+                    
+                    // Формируем сообщение для Telegram
+                    const telegramMessage = formatTelegramMessage(formData);
+                    
+                    // Отправляем в Telegram
+                    await sendToTelegram(botToken, chatId, telegramMessage);
+                    
+                    // Показываем сообщение об успехе
+                    document.getElementById('successMessage').style.display = 'block';
+                    
+                    // Прокручиваем к сообщению
+                    document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+                    
+                    // Сбрасываем форму
+                    document.getElementById('invitationForm').reset();
+                    
+                    // Восстанавливаем значения по умолчанию
+                    document.getElementById('date').value = defaultDateString;
+                    document.getElementById('time').value = "18:00";
+                    
+                } catch (error) {
+                    console.error('Ошибка при отправке:', error);
+                    document.getElementById('errorText').textContent = `Не удалось отправить приглашение: ${error.message}`;
+                    document.getElementById('errorMessage').style.display = 'block';
+                    document.getElementById('errorMessage').scrollIntoView({ behavior: 'smooth' });
+                } finally {
+                    // Восстанавливаем кнопку
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
                 }
             });
             
-            // Обработка кнопки показа админ-панели
-            document.getElementById('showAdminBtn').addEventListener('click', function() {
-                const password = document.getElementById('adminPassword').value;
+            // Обработка сохранения настроек Telegram
+            document.getElementById('saveSettingsBtn').addEventListener('click', function() {
+                const botToken = document.getElementById('botToken').value.trim();
+                const chatId = document.getElementById('chatId').value.trim();
                 
-                // Простая проверка пароля
-                if (password === 'Penza2023') {
-                    document.getElementById('responsesContainer').classList.remove('hidden');
-                    loadResponses();
-                } else {
-                    alert('Неверный пароль! Попробуйте еще раз.');
-                }
-            });
-            
-            // Функция сохранения ответа
-            function saveResponse(response) {
-                let responses = JSON.parse(localStorage.getItem('nyushaResponses') || '[]');
-                responses.push({
-                    ...response,
-                    timestamp: new Date().toISOString()
-                });
-                localStorage.setItem('nyushaResponses', JSON.stringify(responses));
-            }
-            
-            // Функция загрузки ответов
-            function loadResponses() {
-                const responses = JSON.parse(localStorage.getItem('nyushaResponses') || '[]');
-                const tableBody = document.getElementById('responsesTable');
-                const noResponsesDiv = document.getElementById('noResponses');
-                
-                tableBody.innerHTML = '';
-                
-                if (responses.length === 0) {
-                    noResponsesDiv.style.display = 'block';
+                if (!botToken || !chatId) {
+                    alert('Пожалуйста, заполните оба поля!');
                     return;
                 }
                 
-                noResponsesDiv.style.display = 'none';
+                // Сохраняем в localStorage
+                localStorage.setItem('telegramBotToken', botToken);
+                localStorage.setItem('telegramChatId', chatId);
                 
-                // Показываем ответы в обратном порядке (последний первый)
-                responses.slice().reverse().forEach(response => {
-                    const row = document.createElement('tr');
-                    
-                    // Форматируем дату
-                    const dateObj = new Date(response.date);
-                    const formattedDate = dateObj.toLocaleDateString('ru-RU', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric'
-                    });
-                    
-                    row.innerHTML = `
-                        <td>${formattedDate}</td>
-                        <td>${response.time}</td>
-                        <td>${response.locations.join(', ')}</td>
-                        <td>${response.activities.join(', ')}</td>
-                        <td>${response.message || '—'}</td>
-                    `;
-                    
-                    tableBody.appendChild(row);
-                });
+                // Показываем сообщение об успехе
+                const successMsg = document.getElementById('settingsSuccess');
+                successMsg.style.display = 'block';
+                successMsg.scrollIntoView({ behavior: 'smooth' });
+                
+                // Прячем сообщение через 3 секунды
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                }, 3000);
+                
+                // Тестовое сообщение
+                sendTestMessage(botToken, chatId);
+            });
+            
+            // Функция загрузки сохранённых настроек
+            function loadTelegramSettings() {
+                const savedToken = localStorage.getItem('telegramBotToken');
+                const savedChatId = localStorage.getItem('telegramChatId');
+                
+                if (savedToken) {
+                    document.getElementById('botToken').value = savedToken;
+                }
+                
+                if (savedChatId) {
+                    document.getElementById('chatId').value = savedChatId;
+                }
             }
             
-            // Добавляем немного "магии" для заманивания
+            // Функция форматирования сообщения для Telegram
+            function formatTelegramMessage(formData) {
+                const dateObj = new Date(formData.date);
+                const formattedDate = dateObj.toLocaleDateString('ru-RU', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                });
+                
+                return `🎉 *НОВЫЙ ОТВЕТ ОТ НЮШИ!* 🎉
+
+👤 *От:* ${formData.sender}
+📅 *Дата:* ${formattedDate}
+⏰ *Время:* ${formData.time}
+📍 *Места для прогулки:* ${formData.locations.join(', ')}
+❤️ *Занятия:* ${formData.activities.join(', ')}
+
+💬 *Пожелания:*
+${formData.message || 'Без дополнительных пожеланий'}
+
+📋 *Ответ получен:* ${formData.timestamp}
+
+✅ *Действие:* Приглашение отправлено Нюшей!`;
+            }
+            
+            // Функция отправки сообщения в Telegram
+            async function sendToTelegram(botToken, chatId, message) {
+                const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: message,
+                        parse_mode: 'Markdown',
+                        disable_notification: false
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Telegram API: ${errorData.description || 'Unknown error'}`);
+                }
+                
+                return await response.json();
+            }
+            
+            // Функция отправки тестового сообщения
+            async function sendTestMessage(botToken, chatId) {
+                try {
+                    const testMessage = `🤖 *Тестовое сообщение от бота*
+
+✅ Настройки успешно сохранены!
+📱 Теперь ответы от Нюши будут приходить сюда.
+
+💡 Как проверить работу:
+1. Заполните форму на сайте как будто вы Нюша
+2. Нажмите "Отправить приглашение"
+3. Здесь появится ответ с её выбором
+
+⏰ Время: ${new Date().toLocaleTimeString('ru-RU')}`;
+                    
+                    await sendToTelegram(botToken, chatId, testMessage);
+                } catch (error) {
+                    console.error('Ошибка тестового сообщения:', error);
+                    alert('Ошибка отправки тестового сообщения. Проверьте токен и Chat ID.');
+                }
+            }
+            
+            // Добавляем "магию" для заманивания
             const charmElement = document.querySelector('.charm-element');
             
-            // Меняем текст в charm-element каждые 10 секунд
+            // Меняем текст каждые 10 секунд
             const charmMessages = [
                 "Нюша, эта прогулка будет волшебной!",
                 "Я обещаю, будет интересно!",
@@ -589,7 +698,7 @@
                 messageIndex = (messageIndex + 1) % charmMessages.length;
             }, 10000);
             
-            // Анимация при наведении на места прогулки
+            // Анимация при выборе мест
             const locationCheckboxes = document.querySelectorAll('input[name="location"]');
             locationCheckboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', function() {
