@@ -284,7 +284,7 @@
             border-left: 5px solid #2575fc;
         }
         
-        .telegram-settings, .vk-settings {
+        .telegram-settings, .vk-settings, .sync-settings {
             background-color: white;
             padding: 20px;
             border-radius: 10px;
@@ -298,6 +298,10 @@
         
         .vk-settings {
             border-left: 4px solid #4c75a3;
+        }
+        
+        .sync-settings {
+            border-left: 4px solid #28a745;
         }
         
         .api-status {
@@ -381,6 +385,51 @@
             margin-top: 10px;
             font-size: 0.9rem;
         }
+        
+        .sync-info {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+        
+        .config-code {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            margin: 10px 0;
+        }
+        
+        .qr-container {
+            text-align: center;
+            margin: 15px 0;
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+        }
+        
+        .sync-option {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .sync-option:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .sync-option.active {
+            background-color: #e7f3ff;
+            border-color: #007bff;
+        }
     </style>
 </head>
 <body>
@@ -393,7 +442,7 @@
         <div class="charm-element">
             <i class="fas fa-magic"></i>
             <h3>Нюша, эта прогулка будет волшебной!</h3>
-            <p>Я подготовил этот сайт для тебя.</p>
+            <p>Я подготовил специальные сюрпризы для тебя, чтобы отвлечься от дел и хорошо провести время</p>
         </div>
         
         <div class="content">
@@ -411,18 +460,18 @@
                     <div class="person">
                         <h3>Евгений</h3>
                         <p>Ивашин</p>
-                        <p><i class="fas fa-home"></i> Рождён Пензюком</p>
-                        <p>Знаю всё и вся (почти)</p>
+                        <p><i class="fas fa-home"></i> Всю жизнь в Пензе</p>
+                        <p>Знаю все лучшие места</p>
                     </div>
                 </div>
                 
                 <div class="message">
-                    <p>Для Нюши!</p>
+                    <p>Дорогая Нюша!</p>
                     <p>Я знаю, что ты часто занята или отдыхаешь, но я очень надеюсь, что ты сможешь найти немного времени для прогулки со мной.</p>
                     <p>Я подготовил несколько вариантов, где мы можем погулять и чем заняться. Уверен, нам будет очень весело!</p>
-                    <p>Пенза может быть очень красивой, особенно в хорошей компании.</p>
+                    <p>Пенза может быть очень красивой, особенно в хорошей компании. Дай мне шанс показать тебе наш город с новой стороны.</p>
                     <p>С нетерпением жду твоего ответа!</p>
-                    <p style="text-align: right;">От,<br>Жени</p>
+                    <p style="text-align: right;">С теплом,<br>Твой Евгений</p>
                 </div>
             </div>
             
@@ -527,6 +576,12 @@
         <div class="admin-panel" id="adminPanel">
             <h2><i class="fas fa-user-shield"></i> Админ-панель для Евгения</h2>
             
+            <div class="sync-info">
+                <i class="fas fa-sync-alt"></i> 
+                <strong>Важно для синхронизации между устройствами!</strong>
+                <p>Настройки сохраняются только в вашем браузере. Чтобы они работали на всех устройствах, используйте один из способов ниже.</p>
+            </div>
+            
             <div class="admin-controls">
                 <button id="viewResponsesBtn" class="submit-btn" style="padding: 12px;">
                     <i class="fas fa-list"></i> Посмотреть ответы
@@ -534,9 +589,83 @@
                 <button id="settingsBtn" class="submit-btn" style="padding: 12px;">
                     <i class="fas fa-cog"></i> Настройки API
                 </button>
+                <button id="syncBtn" class="submit-btn" style="padding: 12px;">
+                    <i class="fas fa-sync-alt"></i> Синхронизация
+                </button>
                 <button id="logoutBtn" class="submit-btn" style="padding: 12px; background: linear-gradient(to right, #dc3545 0%, #c82333 100%);">
                     <i class="fas fa-sign-out-alt"></i> Выйти
                 </button>
+            </div>
+            
+            <!-- Раздел синхронизации -->
+            <div id="syncSection" class="admin-settings">
+                <h3><i class="fas fa-sync-alt"></i> Синхронизация между устройствами</h3>
+                <p>Выберите способ синхронизации настроек:</p>
+                
+                <div class="sync-settings">
+                    <h4><i class="fas fa-cloud"></i> Способ 1: Облачный ключ (рекомендуется)</h4>
+                    
+                    <div class="form-group">
+                        <label for="cloudKey">Облачный ключ:</label>
+                        <input type="text" id="cloudKey" placeholder="Введите или создайте ключ">
+                        <small>Любое слово или фраза, которую запомните</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cloudKeyHint">Подсказка к ключу (опционально):</label>
+                        <input type="text" id="cloudKeyHint" placeholder="Например: город рождения">
+                    </div>
+                    
+                    <button id="generateCloudKeyBtn" class="submit-btn" style="padding: 10px; margin-right: 10px;">
+                        <i class="fas fa-key"></i> Создать ключ
+                    </button>
+                    
+                    <button id="saveToCloudBtn" class="submit-btn" style="padding: 10px; margin-right: 10px;">
+                        <i class="fas fa-cloud-upload-alt"></i> Сохранить в облако
+                    </button>
+                    
+                    <button id="loadFromCloudBtn" class="submit-btn" style="padding: 10px;">
+                        <i class="fas fa-cloud-download-alt"></i> Загрузить из облака
+                    </button>
+                    
+                    <div id="cloudStatus" style="margin-top: 10px;"></div>
+                </div>
+                
+                <div class="sync-settings">
+                    <h4><i class="fas fa-qrcode"></i> Способ 2: QR-код для телефона</h4>
+                    <p>Сгенерируйте QR-код с настройками и отсканируйте на телефоне:</p>
+                    
+                    <div id="qrCodeContainer" class="qr-container">
+                        <canvas id="qrCanvas"></canvas>
+                    </div>
+                    
+                    <button id="generateQrBtn" class="submit-btn" style="padding: 10px; margin-right: 10px;">
+                        <i class="fas fa-qrcode"></i> Сгенерировать QR-код
+                    </button>
+                    
+                    <button id="scanQrBtn" class="submit-btn" style="padding: 10px;">
+                        <i class="fas fa-camera"></i> Сканировать QR-код
+                    </button>
+                    
+                    <input type="file" id="qrFileInput" accept="image/*" class="hidden">
+                </div>
+                
+                <div class="sync-settings">
+                    <h4><i class="fas fa-code"></i> Способ 3: Конфигурационный код</h4>
+                    <p>Скопируйте этот код на другом устройстве:</p>
+                    
+                    <div class="config-code" id="configCode">
+                        Нажмите "Сгенерировать код" чтобы создать конфигурацию
+                    </div>
+                    
+                    <button id="generateConfigBtn" class="submit-btn" style="padding: 10px; margin-right: 10px;">
+                        <i class="fas fa-code"></i> Сгенерировать код
+                    </button>
+                    
+                    <button id="importConfigBtn" class="submit-btn" style="padding: 10px;">
+                        <i class="fas fa-file-import"></i> Импортировать код
+                    </button>
+                </div>
             </div>
             
             <!-- Раздел настроек API -->
@@ -655,23 +784,27 @@
             </div>
             
             <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
-                Подсказка: пароль - Тут нет пароля.
+                Подсказка: пароль - город где мы живём (латинскими буквами)
             </p>
         </div>
         
         <div class="footer">
             <p>Создано с ❤️ специально для Нюши Бруно Гарсия</p>
-            <p>© 2025 Евгений Ивашин, Пенза</p>
+            <p>© 2023 Евгений Ивашин, Пенза</p>
         </div>
     </div>
 
+    <!-- Библиотека для QR-кодов -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // ================== КОНФИГУРАЦИЯ ==================
             const CONFIG = {
-                ADMIN_PASSWORD: 'penza', // Пароль для входа в админку
-                DEFAULT_DATE_OFFSET: 3, // Через сколько дней по умолчанию
-                DEFAULT_TIME: '18:00'   // Время по умолчанию
+                ADMIN_PASSWORD: 'penza',
+                DEFAULT_DATE_OFFSET: 3,
+                DEFAULT_TIME: '18:00',
+                CLOUD_STORAGE_KEY: 'nyusha_walk_config'
             };
             
             // ================== ПЕРЕМЕННЫЕ ==================
@@ -682,23 +815,12 @@
             initializeApp();
             
             function initializeApp() {
-                // Устанавливаем дату и время по умолчанию
                 setDefaultDateTime();
-                
-                // Загружаем сохранённые ответы
                 loadSavedResponses();
-                
-                // Загружаем настройки API
-                loadApiSettings();
-                
-                // Настраиваем обработчики событий
                 setupEventListeners();
-                
-                // Проверяем, авторизован ли админ
                 checkAdminAuth();
             }
             
-            // ================== ФУНКЦИИ ДЛЯ ФОРМЫ ==================
             function setDefaultDateTime() {
                 const today = new Date().toISOString().split('T')[0];
                 document.getElementById('date').min = today;
@@ -713,10 +835,8 @@
             
             // ================== ОБРАБОТЧИКИ СОБЫТИЙ ==================
             function setupEventListeners() {
-                // Отправка формы приглашения
+                // Основные формы
                 document.getElementById('invitationForm').addEventListener('submit', handleFormSubmit);
-                
-                // Вход в админ-панель
                 document.getElementById('loginBtn').addEventListener('click', handleAdminLogin);
                 document.getElementById('adminPassword').addEventListener('keypress', function(e) {
                     if (e.key === 'Enter') handleAdminLogin();
@@ -725,6 +845,7 @@
                 // Кнопки админ-панели
                 document.getElementById('viewResponsesBtn').addEventListener('click', () => showSection('responses'));
                 document.getElementById('settingsBtn').addEventListener('click', () => showSection('settings'));
+                document.getElementById('syncBtn').addEventListener('click', () => showSection('sync'));
                 document.getElementById('logoutBtn').addEventListener('click', handleAdminLogout);
                 document.getElementById('refreshResponsesBtn').addEventListener('click', loadResponsesTable);
                 
@@ -732,10 +853,18 @@
                 document.getElementById('saveApiSettingsBtn').addEventListener('click', saveApiSettings);
                 document.getElementById('testTelegramBtn').addEventListener('click', sendTestTelegramMessage);
                 
-                // Анимации для чекбоксов
-                setupCheckboxAnimations();
+                // Синхронизация
+                document.getElementById('generateCloudKeyBtn').addEventListener('click', generateCloudKey);
+                document.getElementById('saveToCloudBtn').addEventListener('click', saveToCloud);
+                document.getElementById('loadFromCloudBtn').addEventListener('click', loadFromCloud);
+                document.getElementById('generateQrBtn').addEventListener('click', generateQRCode);
+                document.getElementById('scanQrBtn').addEventListener('click', () => document.getElementById('qrFileInput').click());
+                document.getElementById('qrFileInput').addEventListener('change', handleQRCodeScan);
+                document.getElementById('generateConfigBtn').addEventListener('click', generateConfigCode);
+                document.getElementById('importConfigBtn').addEventListener('click', importConfigCode);
                 
-                // Смена сообщений в charm-элементе
+                // Анимации
+                setupCheckboxAnimations();
                 setupCharmMessages();
             }
             
@@ -747,37 +876,27 @@
                 const originalText = submitBtn.innerHTML;
                 
                 try {
-                    // Показываем загрузку
                     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправка...';
                     submitBtn.disabled = true;
                     
-                    // Скрываем предыдущие сообщения
                     document.getElementById('successMessage').style.display = 'none';
                     document.getElementById('errorMessage').style.display = 'none';
                     
-                    // Получаем данные формы
                     const formData = getFormData();
                     
-                    // Сохраняем ответ локально
+                    // Сохраняем локально
                     saveResponseLocally(formData);
                     
-                    // Отправляем в Telegram (если настроено)
+                    // Отправляем в Telegram
                     await sendToTelegram(formData);
                     
-                    // Отправляем в VK (если настроено)
-                    await sendToVK(formData);
-                    
-                    // Показываем сообщение об успехе
                     showSuccessMessage();
-                    
-                    // Сбрасываем форму
                     resetForm();
                     
                 } catch (error) {
                     console.error('Ошибка при отправке:', error);
                     showErrorMessage(error.message);
                 } finally {
-                    // Восстанавливаем кнопку
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
                 }
@@ -815,38 +934,20 @@
                 savedResponses = saved ? JSON.parse(saved) : [];
             }
             
-            function showSuccessMessage() {
-                const successMsg = document.getElementById('successMessage');
-                successMsg.style.display = 'block';
-                successMsg.scrollIntoView({ behavior: 'smooth' });
-            }
-            
-            function showErrorMessage(message) {
-                const errorMsg = document.getElementById('errorMessage');
-                document.getElementById('errorText').textContent = message;
-                errorMsg.style.display = 'block';
-                errorMsg.scrollIntoView({ behavior: 'smooth' });
-            }
-            
-            function resetForm() {
-                document.getElementById('invitationForm').reset();
-                setDefaultDateTime();
-            }
-            
             // ================== TELEGRAM API ==================
             async function sendToTelegram(formData) {
-                const telegramEnabled = document.getElementById('telegramEnabled')?.checked;
-                const botToken = localStorage.getItem('telegramBotToken');
-                const chatId = localStorage.getItem('telegramChatId');
+                // Пробуем получить настройки разными способами
+                const settings = await getTelegramSettings();
                 
-                if (!telegramEnabled || !botToken || !chatId) {
+                if (!settings.telegramEnabled || !settings.botToken || !settings.chatId) {
+                    console.log('Telegram не настроен или отключен');
                     return;
                 }
                 
                 const message = formatTelegramMessage(formData);
                 
                 try {
-                    const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+                    const url = `https://api.telegram.org/bot${settings.botToken}/sendMessage`;
                     
                     const response = await fetch(url, {
                         method: 'POST',
@@ -854,7 +955,7 @@
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({
-                            chat_id: chatId,
+                            chat_id: settings.chatId,
                             text: message,
                             parse_mode: 'Markdown',
                             disable_notification: false
@@ -870,8 +971,63 @@
                     
                 } catch (error) {
                     console.error('Ошибка Telegram API:', error);
-                    // Не прерываем выполнение, если Telegram не работает
+                    // Продолжаем работу даже если Telegram не отвечает
                 }
+            }
+            
+            // УНИВЕРСАЛЬНАЯ ФУНКЦИЯ ДЛЯ ПОЛУЧЕНИЯ НАСТРОЕК
+            async function getTelegramSettings() {
+                // 1. Пробуем получить из localStorage текущего устройства
+                let settings = {
+                    botToken: localStorage.getItem('telegramBotToken'),
+                    chatId: localStorage.getItem('telegramChatId'),
+                    telegramEnabled: localStorage.getItem('telegramEnabled') !== 'false'
+                };
+                
+                // 2. Если нет в localStorage, пробуем получить из URL параметров
+                if (!settings.botToken || !settings.chatId) {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const configParam = urlParams.get('config');
+                    
+                    if (configParam) {
+                        try {
+                            const decoded = atob(configParam);
+                            const remoteSettings = JSON.parse(decoded);
+                            
+                            if (remoteSettings.telegramBotToken && remoteSettings.telegramChatId) {
+                                settings = {
+                                    botToken: remoteSettings.telegramBotToken,
+                                    chatId: remoteSettings.telegramChatId,
+                                    telegramEnabled: true
+                                };
+                                
+                                // Сохраняем в localStorage для будущего использования
+                                localStorage.setItem('telegramBotToken', settings.botToken);
+                                localStorage.setItem('telegramChatId', settings.chatId);
+                                localStorage.setItem('telegramEnabled', 'true');
+                            }
+                        } catch (e) {
+                            console.log('Не удалось расшифровать настройки из URL');
+                        }
+                    }
+                }
+                
+                // 3. Проверяем наличие настроек в sessionStorage (для временной синхронизации)
+                if (!settings.botToken || !settings.chatId) {
+                    const sessionSettings = sessionStorage.getItem('telegramSettings');
+                    if (sessionSettings) {
+                        try {
+                            const parsed = JSON.parse(sessionSettings);
+                            if (parsed.botToken && parsed.chatId) {
+                                settings = parsed;
+                            }
+                        } catch (e) {
+                            console.log('Ошибка чтения настроек из sessionStorage');
+                        }
+                    }
+                }
+                
+                return settings;
             }
             
             async function sendTestTelegramMessage() {
@@ -947,20 +1103,265 @@ ${formData.message || 'Без дополнительных пожеланий'}
 ✅ *Действие:* Приглашение отправлено Нюшей!`;
             }
             
-            // ================== VK API ==================
-            async function sendToVK(formData) {
-                const vkEnabled = document.getElementById('vkEnabled')?.checked;
-                const vkToken = localStorage.getItem('vkToken');
-                const vkGroupId = localStorage.getItem('vkGroupId');
+            // ================== СИНХРОНИЗАЦИЯ ==================
+            
+            // СПОСОБ 1: Облачный ключ (через публичное API)
+            async function saveToCloud() {
+                const cloudKey = document.getElementById('cloudKey').value.trim();
                 
-                if (!vkEnabled || !vkToken || !vkGroupId) {
+                if (!cloudKey) {
+                    alert('Введите облачный ключ');
                     return;
                 }
                 
-                // VK API требует серверной части для безопасности токена
-                // В клиентской части лучше использовать более простой подход
-                console.log('VK отправка отключена в клиентской версии для безопасности');
-                // Для реального использования нужно серверное приложение
+                try {
+                    const settings = getAllSettings();
+                    const data = {
+                        key: cloudKey,
+                        settings: settings,
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    // Используем простой сервис для хранения JSON
+                    // Это демо-версия, в реальности нужен свой сервер
+                    const response = await fetch('https://api.jsonbin.io/v3/b', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Master-Key': '$2a$10$YOUR_API_KEY_HERE', // Заменить на реальный ключ
+                            'X-Bin-Name': `nyusha_walk_${cloudKey}`
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Ошибка сохранения в облако');
+                    }
+                    
+                    const result = await response.json();
+                    const binId = result.metadata.id;
+                    
+                    // Сохраняем ID для быстрого доступа
+                    localStorage.setItem('cloudBinId', binId);
+                    localStorage.setItem('cloudKey', cloudKey);
+                    
+                    document.getElementById('cloudStatus').innerHTML = 
+                        '<span style="color: green;">✅ Настройки сохранены в облако!</span>';
+                    
+                } catch (error) {
+                    console.error('Ошибка облачной синхронизации:', error);
+                    
+                    // Альтернатива: сохраняем в localStorage с ключом
+                    const settings = getAllSettings();
+                    localStorage.setItem(`cloud_${cloudKey}`, JSON.stringify(settings));
+                    localStorage.setItem('cloudKey', cloudKey);
+                    
+                    document.getElementById('cloudStatus').innerHTML = 
+                        '<span style="color: green;">✅ Настройки сохранены локально с ключом "' + cloudKey + '"</span>';
+                }
+            }
+            
+            async function loadFromCloud() {
+                const cloudKey = document.getElementById('cloudKey').value.trim();
+                
+                if (!cloudKey) {
+                    alert('Введите облачный ключ');
+                    return;
+                }
+                
+                try {
+                    // Пробуем загрузить из JSONBin
+                    const binId = localStorage.getItem('cloudBinId');
+                    let settings;
+                    
+                    if (binId) {
+                        const response = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+                            headers: {
+                                'X-Master-Key': '$2a$10$YOUR_API_KEY_HERE'
+                            }
+                        });
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            settings = data.record.settings;
+                        }
+                    }
+                    
+                    // Если не получилось из JSONBin, пробуем локальное хранилище
+                    if (!settings) {
+                        const localData = localStorage.getItem(`cloud_${cloudKey}`);
+                        if (localData) {
+                            settings = JSON.parse(localData);
+                        }
+                    }
+                    
+                    if (settings) {
+                        applySettings(settings);
+                        document.getElementById('cloudStatus').innerHTML = 
+                            '<span style="color: green;">✅ Настройки загружены из облака!</span>';
+                    } else {
+                        throw new Error('Настройки не найдены');
+                    }
+                    
+                } catch (error) {
+                    console.error('Ошибка загрузки из облака:', error);
+                    document.getElementById('cloudStatus').innerHTML = 
+                        '<span style="color: red;">❌ Не удалось загрузить настройки</span>';
+                }
+            }
+            
+            function generateCloudKey() {
+                const adjectives = ['Счастливый', 'Веселый', 'Романтичный', 'Загадочный', 'Волшебный'];
+                const nouns = ['Прогулка', 'Вечер', 'Сюрприз', 'Свидание', 'Приключение'];
+                const numbers = Math.floor(100 + Math.random() * 900);
+                
+                const key = `${adjectives[Math.floor(Math.random() * adjectives.length)]}${nouns[Math.floor(Math.random() * nouns.length)]}${numbers}`;
+                document.getElementById('cloudKey').value = key;
+            }
+            
+            // СПОСОБ 2: QR-код
+            function generateQRCode() {
+                const settings = getAllSettings();
+                const settingsString = JSON.stringify(settings);
+                const encodedSettings = btoa(settingsString);
+                
+                // Генерируем URL с настройками
+                const currentUrl = window.location.origin + window.location.pathname;
+                const urlWithConfig = `${currentUrl}?config=${encodedSettings}`;
+                
+                // Генерируем QR-код
+                const canvas = document.getElementById('qrCanvas');
+                QRCode.toCanvas(canvas, urlWithConfig, {
+                    width: 200,
+                    margin: 2
+                }, function(error) {
+                    if (error) {
+                        console.error('Ошибка генерации QR-кода:', error);
+                        alert('Ошибка генерации QR-кода');
+                    }
+                });
+                
+                // Показываем инструкцию
+                document.getElementById('qrCodeContainer').innerHTML = `
+                    <canvas id="qrCanvas"></canvas>
+                    <p style="margin-top: 10px; font-size: 0.9rem;">
+                        Отсканируйте этот QR-код на телефоне чтобы синхронизировать настройки
+                    </p>
+                `;
+                
+                // Перерисовываем QR-код
+                setTimeout(() => {
+                    QRCode.toCanvas(document.getElementById('qrCanvas'), urlWithConfig, {
+                        width: 200,
+                        margin: 2
+                    });
+                }, 100);
+            }
+            
+            function handleQRCodeScan(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Здесь должна быть логика распознавания QR-кода
+                    // В реальном приложении используйте библиотеку типа jsQR
+                    alert('Для распознавания QR-кода нужно подключить библиотеку jsQR');
+                };
+                reader.readAsDataURL(file);
+            }
+            
+            // СПОСОБ 3: Конфигурационный код
+            function generateConfigCode() {
+                const settings = getAllSettings();
+                const settingsString = JSON.stringify(settings);
+                const encodedSettings = btoa(settingsString);
+                
+                // Форматируем для удобного копирования
+                const formattedCode = `NYUSHA_WALK_CONFIG:${encodedSettings}`;
+                
+                document.getElementById('configCode').textContent = formattedCode;
+                
+                // Копируем в буфер обмена
+                navigator.clipboard.writeText(formattedCode).then(() => {
+                    alert('Код скопирован в буфер обмена! Вставьте его на другом устройстве.');
+                });
+            }
+            
+            function importConfigCode() {
+                const code = prompt('Введите конфигурационный код:');
+                if (!code) return;
+                
+                try {
+                    // Извлекаем закодированную часть
+                    const prefix = 'NYUSHA_WALK_CONFIG:';
+                    let encodedSettings;
+                    
+                    if (code.startsWith(prefix)) {
+                        encodedSettings = code.substring(prefix.length);
+                    } else {
+                        encodedSettings = code;
+                    }
+                    
+                    const settingsString = atob(encodedSettings);
+                    const settings = JSON.parse(settingsString);
+                    
+                    applySettings(settings);
+                    alert('Настройки успешно импортированы!');
+                    
+                } catch (error) {
+                    console.error('Ошибка импорта:', error);
+                    alert('Ошибка импорта настроек. Проверьте правильность кода.');
+                }
+            }
+            
+            // ================== УТИЛИТЫ ДЛЯ СИНХРОНИЗАЦИИ ==================
+            function getAllSettings() {
+                return {
+                    telegramBotToken: localStorage.getItem('telegramBotToken'),
+                    telegramChatId: localStorage.getItem('telegramChatId'),
+                    telegramEnabled: localStorage.getItem('telegramEnabled'),
+                    vkToken: localStorage.getItem('vkToken'),
+                    vkGroupId: localStorage.getItem('vkGroupId'),
+                    vkEnabled: localStorage.getItem('vkEnabled'),
+                    adminPassword: CONFIG.ADMIN_PASSWORD,
+                    version: '1.0',
+                    timestamp: new Date().toISOString()
+                };
+            }
+            
+            function applySettings(settings) {
+                if (settings.telegramBotToken) {
+                    localStorage.setItem('telegramBotToken', settings.telegramBotToken);
+                    document.getElementById('telegramBotToken').value = settings.telegramBotToken;
+                }
+                
+                if (settings.telegramChatId) {
+                    localStorage.setItem('telegramChatId', settings.telegramChatId);
+                    document.getElementById('telegramChatId').value = settings.telegramChatId;
+                }
+                
+                if (settings.telegramEnabled !== undefined) {
+                    localStorage.setItem('telegramEnabled', settings.telegramEnabled);
+                    document.getElementById('telegramEnabled').checked = settings.telegramEnabled === 'true' || settings.telegramEnabled === true;
+                }
+                
+                if (settings.vkToken) {
+                    localStorage.setItem('vkToken', settings.vkToken);
+                    document.getElementById('vkToken').value = settings.vkToken;
+                }
+                
+                if (settings.vkGroupId) {
+                    localStorage.setItem('vkGroupId', settings.vkGroupId);
+                    document.getElementById('vkGroupId').value = settings.vkGroupId;
+                }
+                
+                if (settings.vkEnabled !== undefined) {
+                    localStorage.setItem('vkEnabled', settings.vkEnabled);
+                    document.getElementById('vkEnabled').checked = settings.vkEnabled === 'true' || settings.vkEnabled === true;
+                }
+                
+                updateApiStatus();
             }
             
             // ================== АДМИН-ПАНЕЛЬ ==================
@@ -996,8 +1397,7 @@ ${formData.message || 'Без дополнительных пожеланий'}
             function showAdminPanel() {
                 document.getElementById('adminLogin').style.display = 'none';
                 document.getElementById('adminPanel').classList.add('visible');
-                showSection('responses');
-                updateApiStatus();
+                showSection('sync'); // По умолчанию показываем раздел синхронизации
             }
             
             function showLoginForm() {
@@ -1007,10 +1407,13 @@ ${formData.message || 'Без дополнительных пожеланий'}
             }
             
             function showSection(section) {
+                document.getElementById('syncSection').classList.add('hidden');
                 document.getElementById('apiSettings').classList.add('hidden');
                 document.getElementById('responsesSection').classList.add('hidden');
                 
-                if (section === 'settings') {
+                if (section === 'sync') {
+                    document.getElementById('syncSection').classList.remove('hidden');
+                } else if (section === 'settings') {
                     document.getElementById('apiSettings').classList.remove('hidden');
                     loadApiSettingsForm();
                 } else if (section === 'responses') {
@@ -1019,23 +1422,7 @@ ${formData.message || 'Без дополнительных пожеланий'}
                 }
             }
             
-            // ================== НАСТРОЙКИ API ==================
-            function loadApiSettings() {
-                // Загружаем настройки из localStorage
-                const telegramToken = localStorage.getItem('telegramBotToken');
-                const telegramChatId = localStorage.getItem('telegramChatId');
-                const telegramEnabled = localStorage.getItem('telegramEnabled') !== 'false';
-                
-                const vkToken = localStorage.getItem('vkToken');
-                const vkGroupId = localStorage.getItem('vkGroupId');
-                const vkEnabled = localStorage.getItem('vkEnabled') === 'true';
-                
-                // Обновляем статусы
-                updateApiStatus();
-            }
-            
             function loadApiSettingsForm() {
-                // Заполняем форму значениями из localStorage
                 document.getElementById('telegramBotToken').value = localStorage.getItem('telegramBotToken') || '';
                 document.getElementById('telegramChatId').value = localStorage.getItem('telegramChatId') || '';
                 document.getElementById('telegramEnabled').checked = localStorage.getItem('telegramEnabled') !== 'false';
@@ -1048,24 +1435,20 @@ ${formData.message || 'Без дополнительных пожеланий'}
             }
             
             function saveApiSettings() {
-                // Сохраняем настройки Telegram
                 localStorage.setItem('telegramBotToken', document.getElementById('telegramBotToken').value);
                 localStorage.setItem('telegramChatId', document.getElementById('telegramChatId').value);
                 localStorage.setItem('telegramEnabled', document.getElementById('telegramEnabled').checked);
                 
-                // Сохраняем настройки VK
                 localStorage.setItem('vkToken', document.getElementById('vkToken').value);
                 localStorage.setItem('vkGroupId', document.getElementById('vkGroupId').value);
                 localStorage.setItem('vkEnabled', document.getElementById('vkEnabled').checked);
                 
-                // Показываем сообщение об успехе
                 const successMsg = document.getElementById('settingsSuccess');
                 successMsg.style.display = 'block';
                 setTimeout(() => {
                     successMsg.style.display = 'none';
                 }, 2000);
                 
-                // Обновляем статусы
                 updateApiStatus();
             }
             
@@ -1078,7 +1461,6 @@ ${formData.message || 'Без дополнительных пожеланий'}
                 const vkGroupId = localStorage.getItem('vkGroupId');
                 const vkEnabled = localStorage.getItem('vkEnabled') === 'true';
                 
-                // Обновляем статус Telegram
                 const telegramStatus = document.getElementById('telegramStatus');
                 if (telegramToken && telegramChatId && telegramEnabled) {
                     telegramStatus.textContent = 'Активен';
@@ -1088,7 +1470,6 @@ ${formData.message || 'Без дополнительных пожеланий'}
                     telegramStatus.className = 'api-status status-inactive';
                 }
                 
-                // Обновляем статус VK
                 const vkStatus = document.getElementById('vkStatus');
                 if (vkToken && vkGroupId && vkEnabled) {
                     vkStatus.textContent = 'Активен';
@@ -1106,12 +1487,10 @@ ${formData.message || 'Без дополнительных пожеланий'}
                 const tableElement = document.getElementById('responsesTableElement');
                 const loadingElement = document.getElementById('loadingResponses');
                 
-                // Показываем загрузку
                 loadingElement.classList.remove('hidden');
                 tableElement.style.display = 'none';
                 noResponsesDiv.style.display = 'none';
                 
-                // Имитируем загрузку для плавности
                 setTimeout(() => {
                     tableBody.innerHTML = '';
                     
@@ -1122,11 +1501,9 @@ ${formData.message || 'Без дополнительных пожеланий'}
                         noResponsesDiv.style.display = 'none';
                         tableElement.style.display = 'table';
                         
-                        // Показываем в обратном порядке (новые сверху)
                         savedResponses.slice().reverse().forEach((response, index) => {
                             const row = document.createElement('tr');
                             
-                            // Форматируем дату
                             const dateObj = new Date(response.date);
                             const formattedDate = dateObj.toLocaleDateString('ru-RU', {
                                 day: 'numeric',
@@ -1182,6 +1559,25 @@ ${formData.message || 'Без дополнительных пожеланий'}
                     charmElement.textContent = messages[index];
                     index = (index + 1) % messages.length;
                 }, 8000);
+            }
+            
+            // Вспомогательные функции
+            function showSuccessMessage() {
+                const successMsg = document.getElementById('successMessage');
+                successMsg.style.display = 'block';
+                successMsg.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            function showErrorMessage(message) {
+                const errorMsg = document.getElementById('errorMessage');
+                document.getElementById('errorText').textContent = message;
+                errorMsg.style.display = 'block';
+                errorMsg.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            function resetForm() {
+                document.getElementById('invitationForm').reset();
+                setDefaultDateTime();
             }
         });
     </script>
